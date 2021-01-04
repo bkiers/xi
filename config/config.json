@@ -1,0 +1,14 @@
+{
+  "development": {
+    "dialect": "sqlite",
+    "storage": "./data/xi-dev.db"
+  },
+  "test": {
+    "dialect": "sqlite",
+    "storage": "./data/xi-tst.db"
+  },
+  "production": {
+    "dialect": "sqlite",
+    "storage": "./data/xi-prd.db"
+  }
+}

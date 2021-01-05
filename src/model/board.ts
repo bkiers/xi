@@ -8,6 +8,7 @@ import { Horse } from './horse';
 import { Elephant } from './elephant';
 import { Adviser } from './adviser';
 import { General } from './general';
+import { Move } from './move';
 
 const startState = `
       1 2 3 4 5 6 7 8 9
@@ -47,12 +48,89 @@ export class Board {
     });
   }
 
+  generalsEyeing(): boolean {
+    const redCell = this.findGeneral(Color.Red);
+    const blackCell = this.findGeneral(Color.Black);
+
+    if (blackCell.columnIndex !== redCell.columnIndex) {
+      return false;
+    }
+
+    for (let r = blackCell.rowIndex + 1; r < redCell.rowIndex; r++) {
+      if (this.squareIndex(r, blackCell.columnIndex).isOccupied()) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  getSquaresOccupiedBy(color: Color): Square[] {
+    return [].concat(...this.squares).filter((s) => s.isOccupiedBy(color));
+  }
+
+  getSquaresAttackedBy(color: Color): Square[] {
+    let attacking = [];
+    const occupiedSquares = this.getSquaresOccupiedBy(color);
+
+    for (const square of occupiedSquares) {
+      attacking = attacking.concat(square.piece.eyeingSquares(square, this));
+    }
+
+    return attacking;
+  }
+
+  isCheckmate(color: Color): boolean {
+    return !this.hasPossibleMoves(color) && this.isCheck(color);
+  }
+
+  isCheck(color: Color): boolean {
+    const generalCell = this.findGeneral(color);
+    const otherColor = color === Color.Black ? Color.Red : Color.Black;
+    const otherSquaresAttacked = this.getSquaresAttackedBy(otherColor);
+
+    return otherSquaresAttacked.indexOf(generalCell) > -1;
+  }
+
+  hasPossibleMoves(color: Color): boolean {
+    return this.possibleMoves(color).length > 0;
+  }
+
+  possibleMoves(color: Color): Move[] {
+    const moves = [];
+    const occupiedSquares = this.getSquaresOccupiedBy(color);
+
+    for (const from of occupiedSquares) {
+      const attacking = from.piece.eyeingSquares(from, this);
+
+      for (const to of attacking) {
+        try {
+          // move(...) will throw an error if it was invalid
+          this.move(
+            from.rowIndex,
+            from.columnIndex,
+            to.rowIndex,
+            to.columnIndex,
+            true,
+          );
+
+          moves.push(new Move(from, to));
+        } catch {
+          // Ignore this
+        }
+      }
+    }
+
+    return moves;
+  }
+
   move(
     fromRowIndex: number,
     fromColumnIndex: number,
     toRowIndex: number,
     toColumnIndex: number,
-  ): Piece | null {
+    undoMove = false,
+  ): Move {
     const fromSquare = this.squareIndex(fromRowIndex, fromColumnIndex);
     const toSquare = this.squareIndex(toRowIndex, toColumnIndex);
 
@@ -70,9 +148,28 @@ export class Board {
     toSquare.piece = fromSquare.piece;
     fromSquare.piece = null;
 
-    // TODO checks
+    const undo = (errorMessage: string = null) => {
+      fromSquare.piece = toSquare.piece;
+      toSquare.piece = capturedPiece;
 
-    return capturedPiece;
+      if (errorMessage !== null) {
+        throw new Error(errorMessage);
+      }
+    };
+
+    if (this.generalsEyeing()) {
+      undo('The generals cannot eye each other');
+    }
+
+    if (this.isCheck(colorMoved)) {
+      undo(`${colorMoved} is (still) check`);
+    }
+
+    if (undoMove) {
+      undo();
+    }
+
+    return new Move(fromSquare, toSquare, capturedPiece);
   }
 
   findGeneral(color: Color): Square {

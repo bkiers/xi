@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsBoolean, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UserCreate {
@@ -13,4 +13,8 @@ export class UserCreate {
   @ApiProperty()
   @IsString()
   password: string;
+
+  @ApiProperty()
+  @IsBoolean()
+  isAdmin: boolean;
 }

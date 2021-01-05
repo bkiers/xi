@@ -11,4 +11,7 @@ export class UserEntity extends Model<UserEntity> {
 
   @Column
   passwordHash: string;
+
+  @Column
+  isAdmin: boolean;
 }

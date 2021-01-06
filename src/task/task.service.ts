@@ -6,7 +6,7 @@ export class TaskService {
   private readonly logger = new Logger(TaskService.name);
 
   @Cron(CronExpression.EVERY_MINUTE)
-  async handleCron() {
+  async checkClockTimes() {
     const unfinishedGames = await GameEntity.findAll({
       where: { winnerPlayerId: null },
     });

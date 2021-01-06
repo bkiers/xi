@@ -34,6 +34,12 @@ export class UserController extends BaseController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Find a single user' })
+  @ApiResponse({
+    status: 200,
+    description: 'The user',
+    type: UserRead,
+  })
   async findOne(@Param('id') id: number): Promise<UserRead> {
     const entity = await this.userService.findById(id);
 
@@ -50,8 +56,8 @@ export class UserController extends BaseController {
   @Get()
   @ApiOperation({ summary: 'Find all users' })
   @ApiResponse({
-    status: 201,
-    description: 'The created user',
+    status: 200,
+    description: 'All users',
     type: [UserRead],
   })
   async findAll(): Promise<UserRead[]> {

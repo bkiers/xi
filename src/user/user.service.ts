@@ -27,11 +27,7 @@ export class UserService {
   }
 
   async loggedInUserIsAdmin(req: any): Promise<boolean> {
-    if (!req?.user?.userId) {
-      return false;
-    }
-
-    const user = await this.findById(req?.user?.userId);
+    const user = await this.findById(req.user.userId);
 
     return user?.isAdmin === true;
   }

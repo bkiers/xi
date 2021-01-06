@@ -16,7 +16,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "start:debug:webstorm": "node -r ts-node/register -r tsconfig-paths/register src/main.ts"
+    "start:debug:webstorm": "node -r ts-node/register -r tsconfig-paths/register src/main.ts",
+    "seed:create": "./node_modules/.bin/sequelize seed:generate --name",
+    "seed:run": "./node_modules/.bin/sequelize db:seed:all"
   },
   "dependencies": {
     "@nestjs/common": "^7.5.1",

@@ -1,14 +1,17 @@
 {
   "development": {
     "dialect": "sqlite",
-    "storage": "./data/xi-dev.db"
+    "storage": "./data/xi-dev.db",
+    "logging": true
   },
   "test": {
     "dialect": "sqlite",
-    "storage": "./data/xi-tst.db"
+    "storage": "./data/xi-tst.db",
+    "logging": false
   },
   "production": {
     "dialect": "sqlite",
-    "storage": "./data/xi-prd.db"
+    "storage": "./data/xi-prd.db",
+    "logging": false
   }
 }

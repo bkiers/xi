@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { join } from 'path';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import * as bcrypt from 'bcrypt';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -19,8 +20,12 @@ async function bootstrap() {
 
   SwaggerModule.setup('api', app, document);
 
-  app.useStaticAssets(join(__dirname, '..', 'public'));
-  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  // TODO app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  const publicDirRoot = '/Users/bart/Development/Nest/xi';
+  const viewsDirRoot = '/Users/bart/Development/Nest/xi';
+
+  app.useStaticAssets(join(publicDirRoot, 'public'));
+  app.setBaseViewsDir(join(viewsDirRoot, 'views'));
   app.setViewEngine('hbs');
 
   await app.listen(3000);

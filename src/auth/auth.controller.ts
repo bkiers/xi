@@ -16,7 +16,7 @@ import { UserService } from '../user/user.service';
 @Controller('auth')
 export class AuthController extends BaseController {
   constructor(
-    private authService: AuthService,
+    private readonly authService: AuthService,
     protected readonly userService: UserService,
   ) {
     super(userService);

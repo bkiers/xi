@@ -36,17 +36,6 @@ describe('Board', () => {
     });
   });
 
-  //     if (!fromSquare.isOccupied()) {
-  //       throw new Error(`Square ${fromSquare} is not occupied`);
-  //
-  //     if (toSquare.isOccupiedBy(fromSquare.piece.color)) {
-  //       throw new Error(`Square ${toSquare} is occupied by the same color`);
-  //
-  //     if (this.generalsEyeing()) {
-  //       undo('The generals cannot eye each other');
-  //
-  //     if (this.isCheck(colorMoved)) {
-  //       undo(`${colorMoved} is (still) check`);
   describe('move', () => {
     it('throws an error when generals are eyeing each other', () => {
       const b = new Board(`

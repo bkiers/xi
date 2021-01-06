@@ -14,6 +14,10 @@ module.exports = {
       )
     )[0][0].id;
 
+    const secondsPerMove = 60 * 60 * 24 * 3;
+    const clockRunsOutAt = new Date();
+    clockRunsOutAt.setSeconds(clockRunsOutAt.getSeconds() + secondsPerMove);
+
     const gameId = await queryInterface.bulkInsert(
       'GameEntities',
       [
@@ -23,8 +27,9 @@ module.exports = {
           turnPlayerId: aliceId,
           redPlayerId: aliceId,
           blackPlayerId: bobId,
-          accepted: false,
-          secondsPerMove: 60 * 60 * 24 * 3,
+          accepted: true,
+          secondsPerMove: secondsPerMove,
+          clockRunsOutAt: clockRunsOutAt,
           acceptanceCode: 'some-random-string',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -71,6 +76,23 @@ module.exports = {
       ],
       {},
     );
+
+    // After these 2 moves:
+    //
+    //       0 1 2 3 4 5 6 7 8
+    //     +-------------------+
+    //   0 | r h e a g a e . r |
+    //   1 | . . . . . . . . . |
+    //   2 | . c . . . . h c . |
+    //   3 | s . s . s . s . s |
+    //   4 | . . . . . . . . . |
+    //   5 | . . . . . . . . . |
+    //   6 | S . S . S . S . S |
+    //   7 | . . . . C . . C . |
+    //   8 | . . . . . . . . . |
+    //   9 | R H E A G A E H R |
+    //     +-------------------+
+    //       0 1 2 3 4 5 6 7 8
   },
 
   down: async (queryInterface, Sequelize) => {

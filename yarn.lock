@@ -591,6 +591,13 @@
     "tslib" "2.0.3"
     "uuid" "8.3.2"
 
+"@nestjs/event-emitter@^0.0.2":
+  "integrity" "sha512-6a35g9m3FmqXaZus1s/mbbSZzKzGQseTEAZcxfkObKt3uOl4LXhQCwxW4sEoCCQ+NslfdxC+Na0AFI2PWdbIzw=="
+  "resolved" "https://registry.npmjs.org/@nestjs/event-emitter/-/event-emitter-0.0.2.tgz"
+  "version" "0.0.2"
+  dependencies:
+    "eventemitter2" "6.4.3"
+
 "@nestjs/jwt@^7.2.0":
   "integrity" "sha512-uOTqYmWNpu+oS/MrdYjrWXtKGV4HkCYmAEVEFPP/KfiP/7K6fNy+boLllE6cnqESAXh9u0CLa1noAAavs+LHEQ=="
   "resolved" "https://registry.npmjs.org/@nestjs/jwt/-/jwt-7.2.0.tgz"
@@ -2721,6 +2728,11 @@
   dependencies:
     "d" "1"
     "es5-ext" "~0.10.14"
+
+"eventemitter2@6.4.3":
+  "integrity" "sha512-t0A2msp6BzOf+QAcI6z9XMktLj52OjGQg+8SJH6v5+3uxNpWYRR3wQmfA+6xtMU9kOC59qk9licus5dYcrYkMQ=="
+  "resolved" "https://registry.npmjs.org/eventemitter2/-/eventemitter2-6.4.3.tgz"
+  "version" "6.4.3"
 
 "events@^3.2.0":
   "integrity" "sha512-/46HWwbfCX2xTawVfkKLGxMifJYQBWMwY1mjywRtb4c9x8l5NP3KoJtnIOiL1hfdRkIuYhETxQlo62IF8tcnlg=="

@@ -3,7 +3,6 @@ import { AppModule } from './app.module';
 import { join } from 'path';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import * as bcrypt from 'bcrypt';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);

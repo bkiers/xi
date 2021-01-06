@@ -7,6 +7,8 @@ import { AppController } from './app.controller';
 import { GameEntity } from './game/game.entity';
 import { MoveEntity } from './game/move.entity';
 import { GameModule } from './game/game.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -17,9 +19,11 @@ import { GameModule } from './game/game.module';
       autoLoadModels: true,
       models: [UserEntity, MoveEntity, GameEntity],
     }),
+    EventEmitterModule.forRoot(),
     UserModule,
     AuthModule,
     GameModule,
+    EmailModule,
   ],
   controllers: [AppController],
 })

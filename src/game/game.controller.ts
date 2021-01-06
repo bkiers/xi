@@ -83,12 +83,9 @@ export class GameController extends BaseController {
     @Request() req,
     @Body() gameCreate: GameCreate,
   ): Promise<GameRead> {
-    const gameEntity = await this.gameService.create(
-      req.user.userId,
-      gameCreate,
-    );
+    const entity = await this.gameService.create(req.user.userId, gameCreate);
 
-    return new GameRead(gameEntity);
+    return new GameRead(entity);
   }
 
   @Delete(':id')

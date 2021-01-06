@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { GameCreate } from './game.create';
 import { GameEntity } from './game.entity';
 import { Color } from '../model/color';
 
 @Injectable()
 export class GameService {
+  constructor(private readonly eventEmitter: EventEmitter2) {}
+
   async findById(id: number): Promise<GameEntity | null> {
     return GameEntity.findByPk(id, { include: [{ all: true }] });
   }
@@ -22,7 +25,7 @@ export class GameService {
         ? [loggedInUserId, gameCreate.opponentPlayerId]
         : [gameCreate.opponentPlayerId, loggedInUserId];
 
-    const gameEntity = new GameEntity({
+    const entity = await GameEntity.create({
       initiatedPlayerId: loggedInUserId,
       invitedPlayerId: gameCreate.opponentPlayerId,
       turnPlayerId: redPlayerId,
@@ -33,7 +36,11 @@ export class GameService {
       acceptanceCode: Math.random().toString(36).substring(32),
     });
 
-    return gameEntity.save();
+    const gaveWithIncludes = await this.findById(entity.id);
+
+    this.eventEmitter.emit('game.created', gaveWithIncludes);
+
+    return gaveWithIncludes;
   }
 
   async delete(loggedInUserId: number, id: number) {

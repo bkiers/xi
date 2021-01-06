@@ -27,7 +27,7 @@ import { GameRead } from './game.read';
 import { GameService } from './game.service';
 
 @ApiTags('games')
-@Controller('games')
+@Controller('api/games')
 @UseFilters(new ValidationFilter())
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()

@@ -24,7 +24,7 @@ import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 import { BaseController } from '../base.controller';
 
 @ApiTags('users')
-@Controller('users')
+@Controller('api/users')
 @UseFilters(new ValidationFilter())
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()

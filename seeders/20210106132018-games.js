@@ -16,7 +16,7 @@ module.exports = {
 
     const secondsPerMove = 60 * 60 * 24 * 3;
     const clockRunsOutAt = new Date();
-    clockRunsOutAt.setSeconds(clockRunsOutAt.getSeconds() + secondsPerMove);
+    clockRunsOutAt.setTime(clockRunsOutAt.getTime() + secondsPerMove * 1000);
 
     const gameId = await queryInterface.bulkInsert(
       'GameEntities',

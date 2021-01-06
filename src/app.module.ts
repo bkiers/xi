@@ -9,6 +9,8 @@ import { MoveEntity } from './game/move.entity';
 import { GameModule } from './game/game.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { EmailModule } from './email/email.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TaskModule } from './task/task.module';
 
 @Module({
   imports: [
@@ -20,10 +22,12 @@ import { EmailModule } from './email/email.module';
       models: [UserEntity, MoveEntity, GameEntity],
     }),
     EventEmitterModule.forRoot(),
+    ScheduleModule.forRoot(),
     UserModule,
     AuthModule,
     GameModule,
     EmailModule,
+    TaskModule,
   ],
   controllers: [AppController],
 })

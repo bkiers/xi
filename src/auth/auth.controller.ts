@@ -13,7 +13,7 @@ import { BaseController } from '../base.controller';
 import { UserService } from '../user/user.service';
 
 @ApiTags('auth')
-@Controller('auth')
+@Controller('api/auth')
 export class AuthController extends BaseController {
   constructor(
     private readonly authService: AuthService,

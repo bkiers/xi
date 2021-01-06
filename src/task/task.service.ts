@@ -1,11 +1,11 @@
 import { Logger } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { GameEntity } from '../game/game.entity';
 
 export class TaskService {
   private readonly logger = new Logger(TaskService.name);
 
-  @Cron('* * * * *')
+  @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
     const unfinishedGames = await GameEntity.findAll({
       where: { winnerPlayerId: null },

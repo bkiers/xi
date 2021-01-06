@@ -9,11 +9,18 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginRequest } from './login.request';
 import { LoginResponse } from './login.response';
+import { BaseController } from '../base.controller';
+import { UserService } from '../user/user.service';
 
 @ApiTags('auth')
 @Controller('auth')
-export class AuthController {
-  constructor(private authService: AuthService) {}
+export class AuthController extends BaseController {
+  constructor(
+    private authService: AuthService,
+    protected readonly userService: UserService,
+  ) {
+    super(userService);
+  }
 
   @Post('login')
   @ApiResponse({

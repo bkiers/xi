@@ -21,14 +21,17 @@ import { UserService } from './user.service';
 import { UserRead } from './user.read';
 import { ValidationFilter } from '../filter/validation.filter';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
+import { BaseController } from '../base.controller';
 
 @ApiTags('users')
 @Controller('users')
 @UseFilters(new ValidationFilter())
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
-export class UserController {
-  constructor(private readonly userService: UserService) {}
+export class UserController extends BaseController {
+  constructor(protected readonly userService: UserService) {
+    super(userService);
+  }
 
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<UserRead> {
@@ -68,9 +71,7 @@ export class UserController {
     @Request() req,
     @Body() userCreate: UserCreate,
   ): Promise<UserRead> {
-    if (!(await this.userService.loggedInUserIsAdmin(req))) {
-      throw new HttpException('Sorry, no can do :(', HttpStatus.UNAUTHORIZED);
-    }
+    await super.checkAdmin(req);
 
     const entity = await this.userService.create(userCreate);
 

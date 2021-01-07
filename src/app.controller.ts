@@ -3,18 +3,21 @@ import {
   Controller,
   Get,
   HttpService,
+  Param,
   Post,
   Query,
   Render,
   Request,
   Res,
 } from '@nestjs/common';
+import { Method } from 'axios';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
 import { AuthService } from './auth/auth.service';
 import { UserService } from './user/user.service';
 import { GameService } from './game/game.service';
 import { LoginRequest } from './auth/login.request';
 import { LoginResponse } from './auth/login.response';
+import { GameRead } from './game/game.read';
 
 @Controller()
 export class AppController {
@@ -22,15 +25,31 @@ export class AppController {
     private readonly userService: UserService,
     private readonly authService: AuthService,
     private readonly gameService: GameService,
-    private readonly http: HttpService,
+    private readonly httpService: HttpService,
   ) {}
 
   @Get('/')
   @ApiExcludeEndpoint()
-  @Render('index')
-  async index(@Request() req) {
-    // const user = await this.authService.userFor(req.cookies['accessToken']);
-    return {};
+  async index(@Res() res) {
+    return res.redirect('/games');
+  }
+
+  @Get('/games')
+  @ApiExcludeEndpoint()
+  @Render('games')
+  async games(@Request() req) {
+    const games = await this.http<GameRead[]>('/api/games', 'get', req);
+
+    return { games: games };
+  }
+
+  @Get('/games/:id')
+  @ApiExcludeEndpoint()
+  @Render('game')
+  async game(@Param('id') id: number, @Request() req) {
+    const game = await this.http<[]>(`/api/games/${id}`, 'get', req);
+
+    return { game: game };
   }
 
   @Get('/login')
@@ -48,11 +67,12 @@ export class AppController {
     @Res() res,
   ) {
     try {
-      const loginResponse = (
-        await this.http
-          .post('http://localhost:3000/api/auth/login', loginRequest)
-          .toPromise()
-      ).data as LoginResponse;
+      const loginResponse = await this.http<LoginResponse>(
+        '/api/auth/login',
+        'post',
+        null,
+        loginRequest,
+      );
 
       res.cookie('accessToken', loginResponse.access_token);
 
@@ -63,5 +83,24 @@ export class AppController {
         error: e.response.data.message,
       });
     }
+  }
+
+  private async http<T>(
+    url: string,
+    method: string,
+    req: any = null,
+    data: any = null,
+  ): Promise<T> | null {
+    const axiosResponse = await this.httpService
+      .request({
+        baseURL: 'http://localhost:3000',
+        url: url,
+        method: method as Method,
+        headers: { Authorization: `Bearer ${req?.cookies['accessToken']}` },
+        data: data,
+      })
+      .toPromise();
+
+    return axiosResponse.data as T;
   }
 }

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Xi - Games</title>
+</head>
+<body>
+<h1>Xi</h1>
+<table>
+  <thead>
+    <th>id</th>
+    <th>red</th>
+    <th>black</th>
+  </thead>
+</table>
+<tbody>
+  {{#each games}}
+    <tr>
+      <td><a href="/games/{{this.id}}">{{this.id}}</a></td>
+      <td>{{this.redPlayer.name}}</td>
+      <td>{{this.blackPlayer.name}}</td>
+    </tr>
+  {{/each}}
+</tbody>
+</body>
+</html>

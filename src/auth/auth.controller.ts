@@ -4,23 +4,18 @@ import {
   Body,
   HttpException,
   HttpStatus,
+  Res,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginRequest } from './login.request';
 import { LoginResponse } from './login.response';
-import { BaseController } from '../base.controller';
-import { UserService } from '../user/user.service';
 
 @ApiTags('auth')
 @Controller('api/auth')
-export class AuthController extends BaseController {
-  constructor(
-    private readonly authService: AuthService,
-    protected readonly userService: UserService,
-  ) {
-    super(userService);
-  }
+export class AuthController {
+  constructor(protected readonly authService: AuthService) {}
 
   @Post('login')
   @ApiResponse({
@@ -28,7 +23,10 @@ export class AuthController extends BaseController {
     description: 'The access/bearer token',
     type: LoginResponse,
   })
-  async login(@Body() loginRequest: LoginRequest) {
+  async login(
+    @Body() loginRequest: LoginRequest,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const user = await this.authService.validateUser(
       loginRequest.email,
       loginRequest.password,

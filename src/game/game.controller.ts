@@ -18,10 +18,8 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { UserService } from '../user/user.service';
 import { ValidationFilter } from '../filter/validation.filter';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
-import { BaseController } from '../base.controller';
 import { GameCreate } from './game.create';
 import { GameRead } from './game.read';
 import { GameService } from './game.service';
@@ -31,13 +29,8 @@ import { GameService } from './game.service';
 @UseFilters(new ValidationFilter())
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
-export class GameController extends BaseController {
-  constructor(
-    protected readonly userService: UserService,
-    protected readonly gameService: GameService,
-  ) {
-    super(userService);
-  }
+export class GameController {
+  constructor(protected readonly gameService: GameService) {}
 
   @Get(':id')
   @ApiOperation({ summary: 'Find a single game' })

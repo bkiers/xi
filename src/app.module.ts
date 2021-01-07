@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  HttpModule,
+  MiddlewareConsumer,
+  Module,
+  RequestMethod,
+} from '@nestjs/common';
 import { UserModule } from './user/user.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { UserEntity } from './user/user.entity';
@@ -11,6 +16,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { EmailModule } from './email/email.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TaskModule } from './task/task.module';
+import { LoginCheckMiddleware } from './middleware/login.check.middleware';
 
 @Module({
   imports: [
@@ -23,6 +29,7 @@ import { TaskModule } from './task/task.module';
     }),
     EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
+    HttpModule,
     UserModule,
     AuthModule,
     GameModule,
@@ -31,4 +38,14 @@ import { TaskModule } from './task/task.module';
   ],
   controllers: [AppController],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoginCheckMiddleware)
+      .exclude(
+        { path: '/login', method: RequestMethod.GET },
+        { path: '/login', method: RequestMethod.POST },
+      )
+      .forRoutes(AppController);
+  }
+}

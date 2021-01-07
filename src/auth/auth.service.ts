@@ -29,4 +29,10 @@ export class AuthService {
 
     return this.jwtService.sign(payload);
   }
+
+  async userFor(accessToken: string): Promise<UserEntity> {
+    const payload = this.jwtService.decode(accessToken);
+
+    return this.userService.findById(payload['sub']);
+  }
 }

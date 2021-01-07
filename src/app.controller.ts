@@ -12,21 +12,13 @@ import {
 } from '@nestjs/common';
 import { Method } from 'axios';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
-import { AuthService } from './auth/auth.service';
-import { UserService } from './user/user.service';
-import { GameService } from './game/game.service';
 import { LoginRequest } from './auth/login.request';
 import { LoginResponse } from './auth/login.response';
 import { GameRead } from './game/game.read';
 
 @Controller()
 export class AppController {
-  constructor(
-    private readonly userService: UserService,
-    private readonly authService: AuthService,
-    private readonly gameService: GameService,
-    private readonly httpService: HttpService,
-  ) {}
+  constructor(private readonly httpService: HttpService) {}
 
   @Get('/')
   @ApiExcludeEndpoint()
@@ -90,7 +82,7 @@ export class AppController {
     method: string,
     req: any = null,
     data: any = null,
-  ): Promise<T> | null {
+  ): Promise<T> {
     const axiosResponse = await this.httpService
       .request({
         baseURL: 'http://localhost:3000',

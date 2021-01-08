@@ -85,7 +85,7 @@ export class AppController {
   ): Promise<T> {
     const axiosResponse = await this.httpService
       .request({
-        baseURL: 'http://localhost:3000',
+        baseURL: `http://localhost:${process.env.XI_PORT}`,
         url: url,
         method: method as Method,
         headers: { Authorization: `Bearer ${req?.cookies['accessToken']}` },

@@ -18,9 +18,10 @@ export class UserService {
   }
 
   async create(userCreate: UserCreate): Promise<UserEntity> {
-    // TODO get `rounds` from config
-    const rounds = 10;
-    const passwordHash = bcrypt.hashSync(userCreate.password, rounds);
+    const passwordHash = bcrypt.hashSync(
+      userCreate.password,
+      process.env.XI_HASH_ROUNDS,
+    );
     const userEntity = new UserEntity({ passwordHash, ...userCreate });
 
     return userEntity.save();

@@ -1,6 +1,17 @@
+import * as dotenv from 'dotenv';
+import { join } from 'path';
+
+// Before we load any of the NestJS classes, be sure to load the configuration
+// on which some of the NestJS classes rely.
+const environment = process.env.XI_ENV || 'development';
+const pathToRoot = __dirname.endsWith('dist/src') ? '../..' : '..';
+
+dotenv.config({
+  path: join(__dirname, pathToRoot, 'config', `${environment}.env`),
+});
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { join } from 'path';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as cookieParser from 'cookie-parser';
@@ -20,18 +31,14 @@ async function bootstrap() {
 
   SwaggerModule.setup('api', app, document);
 
-  // TODO app.setBaseViewsDir(join(__dirname, '..', 'views'));
-  const publicDirRoot = '/Users/bart/Development/Nest/xi';
-  const viewsDirRoot = '/Users/bart/Development/Nest/xi';
-
-  app.useStaticAssets(join(publicDirRoot, 'public'));
-  app.setBaseViewsDir(join(viewsDirRoot, 'views'));
+  app.useStaticAssets(join(__dirname, pathToRoot, 'public'));
+  app.setBaseViewsDir(join(__dirname, pathToRoot, 'views'));
   app.setViewEngine('hbs');
 
   app.enableCors();
   app.use(cookieParser());
 
-  await app.listen(3000);
+  await app.listen(process.env.XI_PORT);
 }
 
 bootstrap();

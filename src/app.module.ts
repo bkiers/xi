@@ -22,8 +22,8 @@ import { LoginCheckMiddleware } from './middleware/login.check.middleware';
   imports: [
     SequelizeModule.forRoot({
       dialect: 'sqlite',
-      storage: './data/xi-dev.db',
-      logging: console.log,
+      storage: process.env.XI_DB_STORAGE,
+      logging: process.env.XI_DB_LOGGING === 'true' ? console.log : null,
       autoLoadModels: true,
       models: [UserEntity, MoveEntity, GameEntity],
     }),

@@ -3,6 +3,7 @@ import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { GameCreate } from './game.create';
 import { GameEntity } from './game.entity';
 import { Color } from '../model/color';
+import { uuid } from 'uuidv4';
 
 @Injectable()
 export class GameService {
@@ -33,7 +34,10 @@ export class GameService {
       blackPlayerId: blackPlayerId,
       accepted: false,
       secondsPerMove: gameCreate.secondsPerMove,
-      acceptanceCode: Math.random().toString(36).substring(32),
+      clockRunsOutAt: new Date(
+        new Date().getTime() + gameCreate.secondsPerMove * 1999,
+      ),
+      acceptanceCode: uuid(),
     });
 
     const gaveWithIncludes = await this.findById(entity.id);

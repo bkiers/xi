@@ -52,6 +52,8 @@ export class GameController {
     return new GameRead(entity);
   }
 
+  // TODO /games/:id/accept/:acceptanceCode
+
   @Get()
   @ApiOperation({ summary: 'Find all games' })
   @ApiResponse({

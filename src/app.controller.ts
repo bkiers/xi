@@ -44,6 +44,8 @@ export class AppController {
     return { game: game };
   }
 
+  // TODO /games/:id/accept/:acceptanceCode
+
   @Get('/login')
   @ApiExcludeEndpoint()
   @Render('login')

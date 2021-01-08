@@ -13,10 +13,11 @@ import { GameEntity } from './game/game.entity';
 import { MoveEntity } from './game/move.entity';
 import { GameModule } from './game/game.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { EmailModule } from './email/email.module';
+import { EventModule } from './event/event.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TaskModule } from './task/task.module';
 import { LoginCheckMiddleware } from './middleware/login.check.middleware';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -29,11 +30,12 @@ import { LoginCheckMiddleware } from './middleware/login.check.middleware';
     }),
     EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
+    EmailModule,
     HttpModule,
     UserModule,
     AuthModule,
     GameModule,
-    EmailModule,
+    EventModule,
     TaskModule,
   ],
   controllers: [AppController],

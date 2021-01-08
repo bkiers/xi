@@ -12,15 +12,15 @@
     <th>red</th>
     <th>black</th>
   </thead>
+  <tbody>
+    {{#each games}}
+      <tr>
+        <td><a href="/games/{{this.id}}">{{this.id}}</a></td>
+        <td>{{this.redPlayer.name}}</td>
+        <td>{{this.blackPlayer.name}}</td>
+      </tr>
+    {{/each}}
+  </tbody>
 </table>
-<tbody>
-  {{#each games}}
-    <tr>
-      <td><a href="/games/{{this.id}}">{{this.id}}</a></td>
-      <td>{{this.redPlayer.name}}</td>
-      <td>{{this.blackPlayer.name}}</td>
-    </tr>
-  {{/each}}
-</tbody>
 </body>
 </html>

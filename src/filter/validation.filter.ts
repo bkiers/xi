@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ValidationError } from 'sequelize';
-import { ValidationResponseError } from '../error/validation.response.error';
+import { ValidationResponseError } from '../model/error/validation.response.error';
 
 @Catch(ValidationError)
 export class ValidationFilter implements ExceptionFilter {

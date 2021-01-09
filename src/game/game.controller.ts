@@ -23,6 +23,7 @@ import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 import { GameCreate } from './game.create';
 import { GameRead } from './game.read';
 import { GameService } from './game.service';
+import { GameAcceptRequest } from '../model/request/game.accept.request';
 
 @ApiTags('games')
 @Controller('api/games')
@@ -52,7 +53,26 @@ export class GameController {
     return new GameRead(entity);
   }
 
-  // TODO /games/:id/accept/:acceptanceCode
+  @Post(':id/accept')
+  @ApiOperation({ summary: 'Accept a game invitation' })
+  @ApiResponse({
+    status: 200,
+    description: 'The accepted game',
+    type: GameRead,
+  })
+  async accept(
+    @Request() req,
+    @Param('id') id: number,
+    @Body() gameAcceptRequest: GameAcceptRequest,
+  ): Promise<GameRead> {
+    const entity = await this.gameService.accept(
+      id,
+      req.user.userId,
+      gameAcceptRequest.acceptanceCode,
+    );
+
+    return new GameRead(entity);
+  }
 
   @Get()
   @ApiOperation({ summary: 'Find all games' })

@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import { join } from 'path';
+import { join, normalize } from 'path';
 
 // Before we load any of the NestJS classes, be sure to load the configuration
 // on which some of the NestJS classes rely.
@@ -7,7 +7,7 @@ const environment = process.env.XI_ENV || 'development';
 const pathToRoot = __dirname.endsWith('dist/src') ? '../..' : '..';
 
 dotenv.config({
-  path: join(__dirname, pathToRoot, 'config', `${environment}.env`),
+  path: join(projectRoot(), 'config', `${environment}.env`),
 });
 
 import { NestFactory } from '@nestjs/core';
@@ -15,6 +15,12 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as cookieParser from 'cookie-parser';
+
+export function projectRoot(): string {
+  return normalize(
+    join(__dirname, __dirname.endsWith('dist/src') ? '../..' : '..'),
+  );
+}
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);

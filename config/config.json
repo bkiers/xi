@@ -1,0 +1,7 @@
+{
+  "development": {
+    "dialect": "sqlite",
+    "storage": "./data/xi-dev.db",
+    "logging": true
+  }
+}

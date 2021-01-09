@@ -8,7 +8,7 @@ export class TaskService {
   @Cron(CronExpression.EVERY_MINUTE)
   async checkClockTimes() {
     const unfinishedGames = await GameEntity.findAll({
-      where: { winnerPlayerId: null },
+      where: { winnerPlayerId: null, accepted: true },
     });
 
     for (const game of unfinishedGames) {

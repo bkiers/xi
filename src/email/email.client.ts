@@ -1,39 +1,31 @@
-import { Injectable } from '@nestjs/common';
-import * as Handlebars from 'handlebars';
-import * as fs from 'fs';
-import * as path from 'path';
+import { Injectable, Logger } from '@nestjs/common';
+import * as SendGrid from '@sendgrid/mail';
+import { MailTemplate } from '../model/template/mail.template';
 
 @Injectable()
 export class EmailClient {
-  private readonly pathToTemplates: string;
+  private readonly logger = new Logger(EmailClient.name);
+  private readonly mailEnabled: boolean;
 
   constructor() {
-    this.pathToTemplates = __dirname.endsWith('dist/src/email')
-      ? '../../../template'
-      : '../../template';
+    SendGrid.setApiKey(process.env.XI_SENDGRID_API_KEY);
+    this.mailEnabled = process.env.XI_MAIL_ENABLED === 'true';
   }
 
-  sendTemplate(templateName: string, data: any = {}): string {
-    const templatePath = path.join(
-      __dirname,
-      this.pathToTemplates,
-      `${templateName}.hbs`,
-    );
+  async sendTemplate(template: MailTemplate) {
+    if (this.mailEnabled) {
+      const message = {
+        to: template.toEmail,
+        from: process.env.XI_MAIL_SENDER,
+        subject: template.subject,
+        html: template.message,
+      };
 
-    const source = fs.readFileSync(templatePath, 'utf8');
-    const template = Handlebars.compile(source);
-
-    const json = data.toJSON();
-
-    json.baseUrl = this.baseUrl();
-
-    return template(json);
-  }
-
-  private baseUrl(): string {
-    const url = process.env.XI_BASE_URL;
-    const port = process.env.XI_PORT;
-
-    return port === '80' ? url : `${url}:${port}`;
+      await SendGrid.send(message);
+    } else {
+      this.logger.log(
+        `Mail disabled, not sending: '${template.templateName}' to '${template.toEmail}'`,
+      );
+    }
   }
 }

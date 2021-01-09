@@ -72,7 +72,6 @@ export class GameEntity extends Model<GameEntity> {
   @Column
   secondsPerMove: number;
 
-  @AllowNull(false)
   @Column
   clockRunsOutAt: Date;
 

@@ -12,10 +12,13 @@ import {
 } from '@nestjs/common';
 import { Method } from 'axios';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
-import { LoginRequest } from './auth/login.request';
-import { LoginResponse } from './auth/login.response';
+import { LoginRequest } from './model/request/login.request';
+import { LoginResponse } from './model/response/login.response';
 import { GameRead } from './game/game.read';
 import { humanReadable } from './util/string.utils';
+import { RequestResetPasswordRequest } from './model/request/request.reset.password.request';
+import { ResetPasswordRequest } from './model/request/reset.password.request';
+import { UserRead } from './user/user.read';
 
 @Controller()
 export class AppController {
@@ -105,6 +108,60 @@ export class AppController {
         data: loginRequest,
         error: e.response.data.message,
       });
+    }
+  }
+
+  @Get('/request-reset-password')
+  @ApiExcludeEndpoint()
+  @Render('request-reset-password')
+  async requestResetPassword() {
+    return { confirmed: false };
+  }
+
+  @Post('/request-reset-password')
+  @ApiExcludeEndpoint()
+  async doRequestResetPassword(
+    @Body() requestResetPasswordRequest: RequestResetPasswordRequest,
+    @Res() res,
+  ) {
+    await this.http<LoginResponse>(
+      '/api/auth/request-reset-password',
+      'post',
+      null,
+      requestResetPasswordRequest,
+    );
+
+    res.render('request-reset-password', { confirmed: true });
+  }
+
+  @Get('/reset-password/:code')
+  @ApiExcludeEndpoint()
+  @Render('reset-password')
+  async resetPassword(@Param('code') code: string) {
+    return { code: code };
+  }
+
+  @Post('/reset-password')
+  @ApiExcludeEndpoint()
+  async doResetPassword(
+    @Body() resetPasswordRequest: ResetPasswordRequest,
+    @Res() res,
+  ) {
+    try {
+      const user = await this.http<UserRead>(
+        '/api/auth/reset-password',
+        'post',
+        null,
+        resetPasswordRequest,
+      );
+
+      const loginRequest = new LoginRequest();
+
+      loginRequest.email = user.email;
+
+      return res.render('login', { data: loginRequest });
+    } catch (e) {
+      return res.render('reset-password', { error: e.response.data.message });
     }
   }
 

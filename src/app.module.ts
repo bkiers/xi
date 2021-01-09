@@ -18,6 +18,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TaskModule } from './task/task.module';
 import { LoginCheckMiddleware } from './middleware/login.check.middleware';
 import { EmailModule } from './email/email.module';
+import { ResetPasswordEntity } from './auth/reset.password.entity';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { EmailModule } from './email/email.module';
       storage: process.env.XI_DB_STORAGE,
       logging: process.env.XI_DB_LOGGING === 'true' ? console.log : null,
       autoLoadModels: true,
-      models: [UserEntity, MoveEntity, GameEntity],
+      models: [UserEntity, MoveEntity, GameEntity, ResetPasswordEntity],
     }),
     EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
@@ -47,6 +48,10 @@ export class AppModule {
       .exclude(
         { path: '/login', method: RequestMethod.GET },
         { path: '/login', method: RequestMethod.POST },
+        { path: '/request-reset-password', method: RequestMethod.GET },
+        { path: '/request-reset-password', method: RequestMethod.POST },
+        { path: '/reset-password', method: RequestMethod.GET },
+        { path: '/reset-password', method: RequestMethod.POST },
       )
       .forRoutes(AppController);
   }

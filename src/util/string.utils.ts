@@ -1,3 +1,14 @@
+import * as bcrypt from 'bcrypt';
+
+export function hashPassword(password: string): string {
+  const hash = bcrypt.hashSync(
+    password,
+    parseInt(process.env.XI_HASH_ROUNDS, 10),
+  );
+
+  return hash;
+}
+
 export function humanReadable(seconds: number): string {
   const parts = [];
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import { UserCreate } from './user.create';
 import { UserEntity } from './user.entity';
+import { hashPassword } from '../util/string.utils';
 
 @Injectable()
 export class UserService {
@@ -18,10 +18,7 @@ export class UserService {
   }
 
   async create(userCreate: UserCreate): Promise<UserEntity> {
-    const passwordHash = bcrypt.hashSync(
-      userCreate.password,
-      process.env.XI_HASH_ROUNDS,
-    );
+    const passwordHash = hashPassword(userCreate.password);
     const userEntity = new UserEntity({ passwordHash, ...userCreate });
 
     return userEntity.save();

@@ -5,6 +5,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { NewGameTemplate } from '../model/template/new.game.template';
 import { AcceptedGameTemplate } from '../model/template/accepted.game.template';
 import { MoveNotificationTemplate } from '../model/template/move.notification.template';
+import { ResetPasswordEntity } from '../auth/reset.password.entity';
+import { ResetPasswordTemplate } from '../model/template/reset.password.template';
 
 @Injectable()
 export class EmailEventBus {
@@ -37,6 +39,17 @@ export class EmailEventBus {
       await this.emailClient.sendTemplate(new MoveNotificationTemplate(game));
     } catch (e) {
       this.logger.error(`Could not send email for event 'game.move': ${e}`);
+    }
+  }
+
+  @OnEvent('reset.password.created', { async: true })
+  private async handleResetEvent(entity: ResetPasswordEntity) {
+    try {
+      await this.emailClient.sendTemplate(new ResetPasswordTemplate(entity));
+    } catch (e) {
+      this.logger.error(
+        `Could not send email for event 'reset.password.created': ${e}`,
+      );
     }
   }
 }

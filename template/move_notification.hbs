@@ -291,8 +291,12 @@
               <table border="0" cellpadding="0" cellspacing="0">
                 <tr>
                   <td>
-                    <p>Hey {{invitedPlayer.name}},</p>
-                    <p>{{initiatedPlayer.name}} invited you for a game of Xiangqi with {{color}} and {{timePerMove}} per move.</p>
+                    <p>Hey {{turnPlayer.name}},</p>
+                    {{#if items.length}}
+                      <p>{{otherPlayerName}} just mde a move, it's your turn to make in game {{id}}</p>
+                    {{else}}
+                      <p>You're first to move in the just accepted game {{id}}</p>
+                    {{/if}}
                     <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
                       <tbody>
                       <tr>
@@ -300,7 +304,7 @@
                           <table border="0" cellpadding="0" cellspacing="0">
                             <tbody>
                             <tr>
-                              <td> <a href="{{baseUrl}}/games/{{id}}/accept/{{acceptanceCode}}" target="_blank">Accept</a> </td>
+                              <td> <a href="{{baseUrl}}/games/{{id}}" target="_blank">View game {{id}}</a> </td>
                             </tr>
                             </tbody>
                           </table>

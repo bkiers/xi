@@ -12,20 +12,29 @@ export class EmailClient {
     this.mailEnabled = process.env.XI_MAIL_ENABLED === 'true';
   }
 
-  async sendTemplate(template: MailTemplate) {
+  async send(toEmail: string, subject: string, html: string) {
     if (this.mailEnabled) {
       const message = {
-        to: template.toEmail,
+        to: toEmail,
         from: process.env.XI_MAIL_SENDER,
-        subject: template.subject,
-        html: template.message,
+        subject: subject,
+        html: html,
       };
 
       await SendGrid.send(message);
     } else {
+      const summary = html.replace(
+        /^[\s\S]*<!-- START MAIN CONTENT AREA -->|<!-- END MAIN CONTENT AREA -->[\s\S]*$/g,
+        '',
+      );
+
       this.logger.log(
-        `Mail disabled, not sending: '${template.templateName}' to '${template.toEmail}'`,
+        `Mail disabled, not sending '${subject}' to '${toEmail}': \n${summary}`,
       );
     }
+  }
+
+  async sendTemplate(template: MailTemplate) {
+    await this.send(template.toEmail, template.subject, template.message);
   }
 }

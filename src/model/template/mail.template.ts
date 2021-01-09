@@ -14,14 +14,19 @@ export abstract class MailTemplate {
     toEmail: string,
     subject: string,
     data: any = {},
+    ...extraData: [string, any][]
   ) {
     this.templateName = templateName;
     this.toEmail = toEmail;
     this.subject = subject;
-    this.message = this.getMessage(templateName, data);
+    this.message = MailTemplate.getMessage(templateName, data, extraData);
   }
 
-  private getMessage(templateName: string, data: any = {}): string {
+  private static getMessage(
+    templateName: string,
+    data: any = {},
+    extraData: [string, any][],
+  ): string {
     const templatePath = join(projectRoot(), 'template', `${templateName}.hbs`);
 
     const source = fs.readFileSync(templatePath, 'utf8');
@@ -29,12 +34,16 @@ export abstract class MailTemplate {
 
     const json = data.toJSON();
 
-    json.baseUrl = this.baseUrl();
+    for (const tuple of extraData) {
+      json[tuple[0]] = tuple[1];
+    }
+
+    json.baseUrl = MailTemplate.baseUrlAnPort();
 
     return template(json);
   }
 
-  private baseUrl(): string {
+  private static baseUrlAnPort(): string {
     const url = process.env.XI_BASE_URL;
     const port = process.env.XI_PORT;
 

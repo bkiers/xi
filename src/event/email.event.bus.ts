@@ -4,6 +4,7 @@ import { EmailClient } from '../email/email.client';
 import { Injectable, Logger } from '@nestjs/common';
 import { NewGameTemplate } from '../model/template/new.game.template';
 import { AcceptedGameTemplate } from '../model/template/accepted.game.template';
+import { MoveNotificationTemplate } from '../model/template/move.notification.template';
 
 @Injectable()
 export class EmailEventBus {
@@ -16,7 +17,7 @@ export class EmailEventBus {
     try {
       await this.emailClient.sendTemplate(new NewGameTemplate(game));
     } catch (e) {
-      this.logger.error(`Could not send 'new_game' email: ${e}`);
+      this.logger.error(`Could not send email for event 'game.created': ${e}`);
     }
   }
 
@@ -24,8 +25,18 @@ export class EmailEventBus {
   private async handleGameAcceptedEvent(game: GameEntity) {
     try {
       await this.emailClient.sendTemplate(new AcceptedGameTemplate(game));
+      await this.emailClient.sendTemplate(new MoveNotificationTemplate(game));
     } catch (e) {
-      this.logger.error(`Could not send 'accepted_game' email: ${e}`);
+      this.logger.error(`Could not send email for event 'game.accepted': ${e}`);
+    }
+  }
+
+  @OnEvent('game.move', { async: true })
+  private async handleGameMoveEvent(game: GameEntity) {
+    try {
+      await this.emailClient.sendTemplate(new MoveNotificationTemplate(game));
+    } catch (e) {
+      this.logger.error(`Could not send email for event 'game.move': ${e}`);
     }
   }
 }

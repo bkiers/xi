@@ -50,7 +50,7 @@ export class AppModule {
         { path: '/login', method: RequestMethod.POST },
         { path: '/request-reset-password', method: RequestMethod.GET },
         { path: '/request-reset-password', method: RequestMethod.POST },
-        { path: '/reset-password', method: RequestMethod.GET },
+        { path: '/reset-password/:code', method: RequestMethod.GET },
         { path: '/reset-password', method: RequestMethod.POST },
       )
       .forRoutes(AppController);

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Xi - Accept game {{game.id}}</title>
+</head>
+<body>
+  <h1>Accept</h1>
+  <p>Accept {{game.redPlayer.name}} vs {{game.blackPlayer.name}} with {{timePerMove}} per move.</p>
+  <form method="POST" action="/games/{{game.id}}/accept">
+    <input type="submit" value="accept"/>
+  </form>
+  {{#if error}}
+    <p>{{error}}</p>
+  {{/if}}
+</body>
+</html>

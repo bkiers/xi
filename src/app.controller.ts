@@ -15,6 +15,7 @@ import { ApiExcludeEndpoint } from '@nestjs/swagger';
 import { LoginRequest } from './auth/login.request';
 import { LoginResponse } from './auth/login.response';
 import { GameRead } from './game/game.read';
+import { humanReadable } from './util/string.utils';
 
 @Controller()
 export class AppController {
@@ -39,12 +40,40 @@ export class AppController {
   @ApiExcludeEndpoint()
   @Render('game')
   async game(@Param('id') id: number, @Request() req) {
-    const game = await this.http<[]>(`/api/games/${id}`, 'get', req);
+    const game = await this.http<GameRead>(`/api/games/${id}`, 'get', req);
 
     return { game: game };
   }
 
-  // TODO /games/:id/accept/:acceptanceCode
+  @Get('/games/:id/accept')
+  @ApiExcludeEndpoint()
+  @Render('accept')
+  async acceptGame(@Param('id') id: number, @Request() req) {
+    const game = await this.http<GameRead>(`/api/games/${id}`, 'get', req);
+
+    return {
+      game: game,
+      timePerMove: humanReadable(game.secondsPerMove),
+    };
+  }
+
+  @Post('/games/:id/accept')
+  @ApiExcludeEndpoint()
+  async doAcceptGame(@Param('id') id: number, @Request() req, @Res() res) {
+    try {
+      await this.http(`/api/games/${id}/accept`, 'post', req);
+
+      return res.redirect(`/games/${id}`);
+    } catch (e) {
+      const game = await this.http<GameRead>(`/api/games/${id}`, 'get', req);
+
+      return res.render('accept', {
+        game: game,
+        timePerMove: humanReadable(game.secondsPerMove),
+        error: e.response.data.message,
+      });
+    }
+  }
 
   @Get('/login')
   @ApiExcludeEndpoint()

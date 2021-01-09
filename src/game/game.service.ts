@@ -3,7 +3,6 @@ import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { GameCreate } from './game.create';
 import { GameEntity } from './game.entity';
 import { Color } from '../model/color';
-import { uuid } from 'uuidv4';
 
 @Injectable()
 export class GameService {
@@ -34,7 +33,6 @@ export class GameService {
       blackPlayerId: blackPlayerId,
       accepted: false,
       secondsPerMove: gameCreate.secondsPerMove,
-      acceptanceCode: uuid(),
     });
 
     const gaveWithIncludes = await this.findById(entity.id);
@@ -58,26 +56,19 @@ export class GameService {
     entity.destroy();
   }
 
-  async accept(
-    gameId: number,
-    userId: number,
-    acceptanceCode: string,
-  ): Promise<GameEntity> {
+  async accept(gameId: number, userId: number): Promise<GameEntity> {
     const entity = await this.findById(gameId);
 
     if (entity === null) {
       throw new Error(`No game found with id ${gameId}`);
     }
+
     if (entity.accepted) {
       throw new Error(`Game with id ${gameId} is already accepted`);
     }
-    if (entity.acceptanceCode !== acceptanceCode) {
-      throw new Error(`Invalid acceptance code`);
-    }
+
     if (entity.invitedPlayerId !== userId) {
-      throw new Error(
-        `Only ${entity.initiatedPlayer.name} can accept this game`,
-      );
+      throw new Error(`Only ${entity.invitedPlayer.name} can accept this game`);
     }
 
     entity.accepted = true;

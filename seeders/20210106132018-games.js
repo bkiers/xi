@@ -30,7 +30,6 @@ module.exports = {
           accepted: true,
           secondsPerMove: secondsPerMove,
           clockRunsOutAt: clockRunsOutAt,
-          acceptanceCode: 'some-random-string',
           createdAt: new Date(),
           updatedAt: new Date(),
         },

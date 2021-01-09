@@ -75,10 +75,6 @@ export class GameEntity extends Model<GameEntity> {
   @Column
   clockRunsOutAt: Date;
 
-  @AllowNull(false)
-  @Column
-  acceptanceCode: string;
-
   @HasMany(() => MoveEntity)
   moves: MoveEntity[];
 

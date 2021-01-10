@@ -9,6 +9,10 @@ export class Adviser extends Piece {
     super(color);
   }
 
+  label(): string {
+    return this.color === Color.Red ? 'A' : 'a';
+  }
+
   eyeingSquares(current: Square, board: Board): Square[] {
     let squares: Square[] = [];
 

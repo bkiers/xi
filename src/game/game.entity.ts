@@ -5,6 +5,7 @@ import {
   CreatedAt,
   ForeignKey,
   HasMany,
+  Index,
   Model,
   Table,
   UpdatedAt,
@@ -55,10 +56,12 @@ export class GameEntity extends Model<GameEntity> {
   blackPlayer: UserEntity;
 
   @AllowNull(false)
+  @Index('idx_game_status')
   @Column
   accepted: boolean;
 
   @ForeignKey(() => UserEntity)
+  @Index('idx_game_status')
   @Column
   winnerPlayerId: number | null;
 

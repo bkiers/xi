@@ -12,6 +12,8 @@ export abstract class Piece {
 
   abstract eyeingSquares(current: Square, board: Board): Square[];
 
+  abstract label(): string;
+
   protected squares(
     current: Square,
     board: Board,

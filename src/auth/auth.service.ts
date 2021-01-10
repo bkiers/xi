@@ -50,11 +50,9 @@ export class AuthService {
       expiresAt: new Date(new Date().getTime() + threeHours),
     });
 
-    const entityWithIncludes = await ResetPasswordEntity.findByPk(entity.id, {
-      include: [{ all: true }],
-    });
+    await entity.reload({ include: [{ all: true }] });
 
-    this.eventEmitter.emit('reset.password.created', entityWithIncludes);
+    this.eventEmitter.emit('reset.password.created', entity);
   }
 
   async resetPassword(code: string, password: string): Promise<UserEntity> {

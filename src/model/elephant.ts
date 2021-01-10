@@ -9,6 +9,10 @@ export class Elephant extends Piece {
     super(color);
   }
 
+  label(): string {
+    return this.color === Color.Red ? 'E' : 'e';
+  }
+
   eyeingSquares(current: Square, board: Board): Square[] {
     const squares: Square[] = [];
     const diagonals: Square[][] = [];

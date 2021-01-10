@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { GameCreate } from './game.create';
 import { GameEntity } from './game.entity';
 import { Color } from '../model/color';
+import { Board } from '../model/board';
+import { MoveEntity } from './move.entity';
 
 @Injectable()
 export class GameService {
@@ -35,11 +37,11 @@ export class GameService {
       secondsPerMove: gameCreate.secondsPerMove,
     });
 
-    const gaveWithIncludes = await this.findById(entity.id);
+    await entity.reload({ include: [{ all: true }] });
 
-    this.eventEmitter.emit('game.created', gaveWithIncludes);
+    this.eventEmitter.emit('game.created', entity);
 
-    return gaveWithIncludes;
+    return entity;
   }
 
   async delete(loggedInUserId: number, id: number) {
@@ -81,5 +83,85 @@ export class GameService {
     this.eventEmitter.emit('game.accepted', entity);
 
     return entity;
+  }
+
+  async move(
+    gameId: number,
+    userId: number,
+    fromColumnIndex: number,
+    fromRowIndex: number,
+    toColumnIndex: number,
+    toRowIndex: number,
+  ): Promise<GameEntity> {
+    const gameEntity = await this.findById(gameId);
+
+    if (gameEntity === null) {
+      throw new Error(`No such game with id ${gameId}`);
+    }
+
+    if (gameEntity.winnerPlayerId !== null) {
+      throw new Error('This game is already over');
+    }
+
+    if (gameEntity.turnPlayerId !== userId) {
+      throw new Error(`It's ${gameEntity.turnPlayer.name}'s turn`);
+    }
+
+    const board = new Board();
+
+    // First make all moves that have previously been made
+    for (const move of gameEntity.moves) {
+      board.move(
+        move.fromRowIndex,
+        move.fromColumnIndex,
+        move.toRowIndex,
+        move.toColumnIndex,
+      );
+    }
+
+    const turnColor =
+      gameEntity.turnPlayerId === gameEntity.redPlayerId
+        ? Color.Red
+        : Color.Black;
+    const opponentColor = turnColor === Color.Red ? Color.Black : Color.Red;
+
+    if (
+      !board.squareIndex(fromRowIndex, fromColumnIndex).isOccupiedBy(turnColor)
+    ) {
+      throw new Error(`It's ${turnColor}'s turn`);
+    }
+
+    // This will throw an error if the move is invalid
+    board.move(fromRowIndex, fromColumnIndex, toRowIndex, toColumnIndex);
+
+    await MoveEntity.create({
+      gameId: gameEntity.id,
+      fromRowIndex: fromRowIndex,
+      fromColumnIndex: fromColumnIndex,
+      toRowIndex: toRowIndex,
+      toColumnIndex: toColumnIndex,
+    });
+
+    gameEntity.turnPlayerId =
+      turnColor == Color.Red
+        ? gameEntity.blackPlayerId
+        : gameEntity.redPlayerId;
+
+    gameEntity.clockRunsOutAt = new Date(
+      new Date().getTime() + gameEntity.secondsPerMove * 1000,
+    );
+
+    // TODO checkmate or no more moves possible
+    if (
+      board.isCheckmate(opponentColor) ||
+      !board.hasPossibleMoves(opponentColor)
+    ) {
+      gameEntity.winnerPlayerId = userId;
+    }
+
+    await gameEntity.save();
+    await gameEntity.reload({ include: [{ all: true }] });
+
+    return gameEntity;
   }
 }

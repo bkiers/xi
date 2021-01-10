@@ -3,13 +3,76 @@
 <head>
   <meta charset="utf-8" />
   <title>Xi - Game {{game.id}}</title>
+  <style>
+    code {
+      font-size: xxx-large;
+    }
+    .red {
+      color: red;
+    }
+    .black {
+      color: black;
+    }
+  </style>
+  <script>
+    let firstSquare = null;
+
+    function clickSquare(square) {
+      document.getElementById('error').innerText = '';
+      let clickedSquare = [square.dataset.rowIndex, square.dataset.columnIndex];
+
+      if (firstSquare === null) {
+        firstSquare = clickedSquare;
+      } else if (firstSquare[0] === clickedSquare[0] && firstSquare[1] === clickedSquare[1]) {
+        firstSquare = null;
+      } else {
+        fetch(`/games/{{game.id}}/move/${firstSquare[0]}/${firstSquare[1]}/${clickedSquare[0]}/${clickedSquare[1]}`, {
+          method: 'POST',
+          credentials: 'same-origin',
+          body: JSON.stringify({})
+        }).then(response => response.json())
+          .then(data => {
+            if (data.error) {
+              document.getElementById('error').innerText = data.error;
+              console.log(data.error)
+            } else {
+              window.location.replace('/games/{{game.id}}');
+            }
+          });
+
+        firstSquare = null;
+      }
+
+      console.log('firstSquare:', firstSquare);
+    }
+  </script>
 </head>
 <body>
   <h2>{{game.id}}. {{game.redPlayer.name}} - {{game.blackPlayer.name}}</h2>
   {{#if game.accepted}}
-    TODO
+    {{#each game.currentState}}
+      <div>
+      {{#each this}}
+        <code
+          onclick="clickSquare(this)"
+          data-row-index="{{this.rowIndex}}"
+          data-column-index="{{this.columnIndex}}"
+          {{#if this.piece}}class="{{this.piece.color}}"{{/if}}
+        >
+          {{#if this.piece}}
+            {{this.piece.label}}
+          {{else}}
+            .
+          {{/if}}
+        </code>
+      {{/each}}
+      </div>
+    {{/each}}
   {{else}}
     This game has not yet been accepted by {{game.invitedPlayer.name}}
   {{/if}}
+
+  {{#if game.gameOver}}{{game.winnerPlayer.name}} won the game{{/if}}
+  <div id="error"></div>
 </body>
 </html>

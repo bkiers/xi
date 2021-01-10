@@ -9,6 +9,10 @@ export class Horse extends Piece {
     super(color);
   }
 
+  label(): string {
+    return this.color === Color.Red ? 'H' : 'h';
+  }
+
   eyeingSquares(current: Square, board: Board): Square[] {
     const squares: Square[] = [];
     const jumps: Square[][] = [];

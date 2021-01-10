@@ -33,12 +33,12 @@ export class EmailEventBus {
     }
   }
 
-  @OnEvent('game.move', { async: true })
+  @OnEvent('move.created', { async: true })
   private async handleGameMoveEvent(game: GameEntity) {
     try {
       await this.emailClient.sendTemplate(new MoveNotificationTemplate(game));
     } catch (e) {
-      this.logger.error(`Could not send email for event 'game.move': ${e}`);
+      this.logger.error(`Could not send email for event 'move.created': ${e}`);
     }
   }
 

@@ -9,6 +9,10 @@ export class Rook extends Piece {
     super(color);
   }
 
+  label(): string {
+    return this.color === Color.Red ? 'R' : 'r';
+  }
+
   eyeingSquares(current: Square, board: Board): Square[] {
     const squares: Square[] = [];
 

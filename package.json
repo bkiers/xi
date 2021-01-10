@@ -43,6 +43,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.3",
     "sequelize": "^5.1.0",
+    "sequelize-mock": "^0.10.2",
     "sequelize-typescript": "^1.1.0",
     "sqlite": "^4.0.19",
     "sqlite3": "^5.0.0",

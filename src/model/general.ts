@@ -9,6 +9,10 @@ export class General extends Piece {
     super(color);
   }
 
+  label(): string {
+    return this.color === Color.Red ? 'G' : 'g';
+  }
+
   eyeingSquares(current: Square, board: Board): Square[] {
     let squares: Square[] = [];
 

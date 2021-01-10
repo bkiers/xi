@@ -1,17 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
+import { IsNumber, IsObject, IsString } from 'class-validator';
+import { Piece } from '../model/piece';
+import { PieceRead } from './piece.read';
 
 export class SquareRead {
+  @ApiProperty()
+  @IsNumber()
+  readonly rowIndex: number;
+
   @ApiProperty()
   @IsNumber()
   readonly columnIndex: number;
 
   @ApiProperty()
-  @IsNumber()
-  readonly rowIndex: number;
+  @IsObject()
+  readonly piece: PieceRead | null;
 
-  constructor(columnIndex: number, rowIndex: number) {
-    this.columnIndex = columnIndex;
+  constructor(
+    rowIndex: number,
+    columnIndex: number,
+    piece: Piece | null = null,
+  ) {
     this.rowIndex = rowIndex;
+    this.columnIndex = columnIndex;
+    this.piece = piece === null ? null : new PieceRead(piece);
   }
 }

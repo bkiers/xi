@@ -23,6 +23,7 @@ import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 import { GameCreate } from './game.create';
 import { GameRead } from './game.read';
 import { GameService } from './game.service';
+import { MoveCreate } from './move.create';
 
 @ApiTags('games')
 @Controller('api/games')
@@ -39,7 +40,7 @@ export class GameController {
     description: 'The game',
     type: GameRead,
   })
-  async findOne(@Param('id') id: number): Promise<GameRead> {
+  async findOne(@Param('id') id: number, @Request() req): Promise<GameRead> {
     const entity = await this.gameService.findById(id);
 
     if (entity === null) {
@@ -49,7 +50,7 @@ export class GameController {
       );
     }
 
-    return new GameRead(entity);
+    return new GameRead(entity, req.user.userId);
   }
 
   @Post(':id/accept')
@@ -108,6 +109,34 @@ export class GameController {
   async delete(@Request() req, @Param('id') id: number) {
     try {
       await this.gameService.delete(req.user.userId, id);
+    } catch (e) {
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Post(':id/move')
+  @ApiOperation({ summary: 'Make a move' })
+  @ApiResponse({
+    status: 200,
+    description: 'The game',
+    type: GameRead,
+  })
+  async move(
+    @Request() req,
+    @Param('id') id: number,
+    @Body() moveCreate: MoveCreate,
+  ): Promise<GameRead> {
+    try {
+      const entity = await this.gameService.move(
+        id,
+        req.user.userId,
+        moveCreate.fromColumnIndex,
+        moveCreate.fromRowIndex,
+        moveCreate.toColumnIndex,
+        moveCreate.toRowIndex,
+      );
+
+      return new GameRead(entity);
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }

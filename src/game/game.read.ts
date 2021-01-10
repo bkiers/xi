@@ -5,6 +5,7 @@ import { GameEntity } from './game.entity';
 import { UserRead } from '../user/user.read';
 import { MoveRead } from './move.read';
 import { SquareRead } from './square.read';
+import { Board } from '../model/board';
 
 @Table
 export class GameRead {
@@ -56,7 +57,15 @@ export class GameRead {
   @IsBoolean()
   readonly gameOver: boolean;
 
-  constructor(entity: GameEntity) {
+  @ApiProperty()
+  @IsBoolean()
+  readonly reversed: boolean;
+
+  @ApiProperty()
+  @IsObject()
+  readonly currentState: SquareRead[][];
+
+  constructor(entity: GameEntity, forUserId: number | null = null) {
     this.id = entity.id;
     this.redPlayer = new UserRead(entity.redPlayer);
     this.blackPlayer = new UserRead(entity.blackPlayer);
@@ -71,10 +80,30 @@ export class GameRead {
     this.moves = entity.moves.map(
       (m) =>
         new MoveRead(
-          new SquareRead(m.fromColumnIndex, m.fromRowIndex),
-          new SquareRead(m.toColumnIndex, m.toRowIndex),
+          new SquareRead(m.fromRowIndex, m.fromColumnIndex),
+          new SquareRead(m.toRowIndex, m.toColumnIndex),
         ),
     );
     this.gameOver = entity.winnerPlayer !== null;
+    this.reversed = forUserId === entity.blackPlayerId;
+    this.currentState = this.getCurrentState(entity, this.reversed);
+  }
+
+  private getCurrentState(
+    entity: GameEntity,
+    reversed: boolean,
+  ): SquareRead[][] {
+    const board = new Board();
+
+    for (const move of entity.moves) {
+      board.move(
+        move.fromRowIndex,
+        move.fromColumnIndex,
+        move.toRowIndex,
+        move.toColumnIndex,
+      );
+    }
+
+    return board.state(reversed);
   }
 }

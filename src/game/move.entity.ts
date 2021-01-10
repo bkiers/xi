@@ -4,6 +4,7 @@ import {
   Column,
   CreatedAt,
   ForeignKey,
+  Index,
   Model,
   Table,
 } from 'sequelize-typescript';
@@ -29,6 +30,7 @@ export class MoveEntity extends Model<MoveEntity> {
 
   @ForeignKey(() => GameEntity)
   @AllowNull(false)
+  @Index
   @Column
   gameId: number;
 

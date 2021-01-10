@@ -9,6 +9,7 @@ import { Elephant } from './elephant';
 import { Adviser } from './adviser';
 import { General } from './general';
 import { Move } from './move';
+import { SquareRead } from '../game/square.read';
 
 const startState = `
       1 2 3 4 5 6 7 8 9
@@ -41,7 +42,7 @@ export class Board {
 
       Array.from(rowState).map((char, columnIndex) => {
         const piece = Board.parse(char);
-        const square = new Square(columnIndex, rowIndex, piece);
+        const square = new Square(rowIndex, columnIndex, piece);
 
         this.squares[rowIndex].push(square);
       });
@@ -142,6 +143,12 @@ export class Board {
       throw new Error(`Square ${toSquare} is occupied by the same color`);
     }
 
+    const eyeingSquares = fromSquare.piece.eyeingSquares(fromSquare, this);
+
+    if (eyeingSquares.indexOf(toSquare) < 0) {
+      throw new Error('Cannot move there');
+    }
+
     const colorMoved = fromSquare.piece.color;
     const capturedPiece = toSquare.piece;
 
@@ -218,6 +225,19 @@ export class Board {
     }
 
     return this.squares[rowIndex][columnIndex];
+  }
+
+  state(reversed: boolean): SquareRead[][] {
+    const state = [];
+
+    for (const row of this.squares) {
+      const readRow = row.map(
+        (s) => new SquareRead(s.rowIndex, s.columnIndex, s.piece),
+      );
+      state.push(reversed ? readRow.reverse() : readRow);
+    }
+
+    return reversed ? state.reverse() : state;
   }
 
   private static parse(label: string): Piece | null {

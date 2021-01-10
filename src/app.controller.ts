@@ -19,6 +19,7 @@ import { humanReadable } from './util/string.utils';
 import { RequestResetPasswordRequest } from './model/request/request.reset.password.request';
 import { ResetPasswordRequest } from './model/request/reset.password.request';
 import { UserRead } from './user/user.read';
+import { MoveCreate } from './game/move.create';
 
 @Controller()
 export class AppController {
@@ -46,6 +47,35 @@ export class AppController {
     const game = await this.http<GameRead>(`/api/games/${id}`, 'get', req);
 
     return { game: game };
+  }
+
+  @Post('/games/:id/move/:fr/:fc/:tr/:tc')
+  @ApiExcludeEndpoint()
+  async move(
+    @Param('id') id: number,
+    @Param('fr') fromRowIndex: number,
+    @Param('fc') fromColumnIndex: number,
+    @Param('tr') toRowIndex: number,
+    @Param('tc') toColumnIndex: number,
+    @Request() req,
+    @Res() res,
+  ) {
+    try {
+      await this.http(
+        `/api/games/${id}/move`,
+        'post',
+        req,
+        new MoveCreate(
+          fromRowIndex,
+          fromColumnIndex,
+          toRowIndex,
+          toColumnIndex,
+        ),
+      );
+      res.status(200).json({ error: null });
+    } catch (e) {
+      res.status(400).json({ error: e.response.data.message });
+    }
   }
 
   @Get('/games/:id/accept')

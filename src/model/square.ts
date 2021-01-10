@@ -2,17 +2,17 @@ import { Piece } from './piece';
 import { Color } from './color';
 
 export class Square {
-  columnIndex: number;
   rowIndex: number;
+  columnIndex: number;
   piece: Piece | null;
 
   constructor(
-    columnIndex: number,
     rowIndex: number,
+    columnIndex: number,
     piece: Piece | null = null,
   ) {
-    this.columnIndex = columnIndex;
     this.rowIndex = rowIndex;
+    this.columnIndex = columnIndex;
     this.piece = piece;
   }
 

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Xi - New game</title>
+</head>
+<body>
+  <h1>New game</h1>
+  {{#if message}}
+    {{message}}
+  {{else}}
+    <form method="POST" action="/games/create">
+      Invite
+      <select name="opponentPlayerId">
+        {{#each opponents}}
+          <option value="{{this.id}}">{{this.name}}</option>
+        {{/each}}
+      </select>
+      where you play with
+      <select name="ownColor">
+        <option value="red">red</option>
+        <option value="black">black</option>
+      </select>
+      and
+      <select name="secondsPerMove">
+        <option value="86400">1</option>
+        <option value="172800">2</option>
+        <option value="259200">3</option>
+        <option value="345600">4</option>
+        <option value="432000">5</option>
+        <option value="518400">6</option>
+        <option value="604800">7</option>
+      </select>
+      days time per move.<br>
+      <input type="submit" value="invite"/>
+    </form>
+  {{/if}}
+
+  {{#if error}}
+    <p>{{error}}</p>
+  {{/if}}
+</body>
+</html>

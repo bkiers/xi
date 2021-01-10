@@ -20,10 +20,40 @@ import { RequestResetPasswordRequest } from './model/request/request.reset.passw
 import { ResetPasswordRequest } from './model/request/reset.password.request';
 import { UserRead } from './user/user.read';
 import { MoveCreate } from './game/move.create';
+import { GameCreate } from './game/game.create';
 
 @Controller()
 export class AppController {
   constructor(private readonly httpService: HttpService) {}
+
+  @Get('/games/create')
+  @ApiExcludeEndpoint()
+  @Render('create')
+  async create(@Request() req) {
+    const users = await this.http<UserRead[]>(
+      '/api/users?onlyOthers=true',
+      'get',
+      req,
+    );
+
+    return { opponents: users, message: null };
+  }
+
+  @Post('/games/create')
+  @ApiExcludeEndpoint()
+  @Render('create')
+  async doCreate(
+    @Body() gameCreate: GameCreate = new GameCreate(),
+    @Request() req,
+  ) {
+    try {
+      await this.http(`/api/games`, 'post', req, gameCreate);
+
+      return { message: 'Invitation sent!' };
+    } catch (e) {
+      return { error: e.response.data.message };
+    }
+  }
 
   @Get('/')
   @ApiExcludeEndpoint()

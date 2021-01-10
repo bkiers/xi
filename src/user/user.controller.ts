@@ -9,6 +9,7 @@ import {
   UseFilters,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { UserCreate } from './user.create';
 import {
@@ -57,10 +58,14 @@ export class UserController {
     description: 'All users',
     type: [UserRead],
   })
-  async findAll(): Promise<UserRead[]> {
+  async findAll(
+    @Request() req,
+    @Query('onlyOthers') onlyOthers = false,
+  ): Promise<UserRead[]> {
     const entities = await this.userService.findAll();
+    const users = entities.map((entity) => new UserRead(entity));
 
-    return entities.map((entity) => new UserRead(entity));
+    return onlyOthers ? users.filter((u) => u.id !== req.user.userId) : users;
   }
 
   @Post()

@@ -151,7 +151,6 @@ export class GameService {
       new Date().getTime() + gameEntity.secondsPerMove * 1000,
     );
 
-    // TODO checkmate or no more moves possible
     if (
       board.isCheckmate(opponentColor) ||
       !board.hasPossibleMoves(opponentColor)
@@ -161,6 +160,10 @@ export class GameService {
 
     await gameEntity.save();
     await gameEntity.reload({ include: [{ all: true }] });
+
+    if (gameEntity.winnerPlayerId !== null) {
+      this.eventEmitter.emit('game.over', gameEntity);
+    }
 
     return gameEntity;
   }

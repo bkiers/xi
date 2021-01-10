@@ -4,14 +4,14 @@ import * as fs from 'fs';
 import { projectRoot } from '../../main';
 
 export abstract class MailTemplate {
-  public readonly templateName;
-  public readonly toEmail;
-  public readonly subject;
-  public readonly message;
+  public readonly templateName: string;
+  public readonly toEmail: string[];
+  public readonly subject: string;
+  public readonly message: string;
 
   protected constructor(
     templateName: string,
-    toEmail: string,
+    toEmail: string[],
     subject: string,
     data: any = {},
     ...extraData: [string, any][]

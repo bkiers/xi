@@ -64,7 +64,7 @@ export class GameController {
     try {
       const entity = await this.gameService.accept(id, req.user.userId);
 
-      return new GameRead(entity);
+      return new GameRead(entity, req.user.userId);
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }
@@ -77,10 +77,10 @@ export class GameController {
     description: 'The created game',
     type: [GameRead],
   })
-  async findAll(): Promise<GameRead[]> {
+  async findAll(@Request() req): Promise<GameRead[]> {
     const entities = await this.gameService.findAll();
 
-    return entities.map((entity) => new GameRead(entity));
+    return entities.map((entity) => new GameRead(entity, req.user.userId));
   }
 
   @Post()
@@ -96,7 +96,7 @@ export class GameController {
   ): Promise<GameRead> {
     const entity = await this.gameService.create(req.user.userId, gameCreate);
 
-    return new GameRead(entity);
+    return new GameRead(entity, req.user.userId);
   }
 
   @Delete(':id')
@@ -136,7 +136,7 @@ export class GameController {
         moveCreate.toRowIndex,
       );
 
-      return new GameRead(entity);
+      return new GameRead(entity, req.user.userId);
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
     }

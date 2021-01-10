@@ -12,7 +12,7 @@ export class EmailClient {
     this.mailEnabled = process.env.XI_MAIL_ENABLED === 'true';
   }
 
-  async send(toEmail: string, subject: string, html: string) {
+  async send(toEmail: string[], subject: string, html: string) {
     if (this.mailEnabled) {
       const message = {
         to: toEmail,

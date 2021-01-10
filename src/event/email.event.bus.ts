@@ -7,6 +7,7 @@ import { AcceptedGameTemplate } from '../model/template/accepted.game.template';
 import { MoveNotificationTemplate } from '../model/template/move.notification.template';
 import { ResetPasswordEntity } from '../auth/reset.password.entity';
 import { ResetPasswordTemplate } from '../model/template/reset.password.template';
+import { GameOverTemplate } from '../model/template/game.over.template';
 
 @Injectable()
 export class EmailEventBus {
@@ -50,6 +51,15 @@ export class EmailEventBus {
       this.logger.error(
         `Could not send email for event 'reset.password.created': ${e}`,
       );
+    }
+  }
+
+  @OnEvent('game.over', { async: true })
+  private async handleGameOverEvent(game: GameEntity) {
+    try {
+      await this.emailClient.sendTemplate(new GameOverTemplate(game));
+    } catch (e) {
+      this.logger.error(`Could not send email for event 'game.over': ${e}`);
     }
   }
 }

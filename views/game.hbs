@@ -48,31 +48,47 @@
   </script>
 </head>
 <body>
-  <h2>{{game.id}}. {{game.redPlayer.name}} - {{game.blackPlayer.name}}</h2>
-  {{#if game.accepted}}
-    {{#each game.currentState}}
-      <div>
-      {{#each this}}
-        <code
-          onclick="clickSquare(this)"
-          data-row-index="{{this.rowIndex}}"
-          data-column-index="{{this.columnIndex}}"
-          {{#if this.piece}}class="{{this.piece.color}}"{{/if}}
-        >
-          {{#if this.piece}}
-            {{this.piece.label}}
-          {{else}}
-            .
-          {{/if}}
-        </code>
-      {{/each}}
-      </div>
-    {{/each}}
-  {{else}}
-    This game has not yet been accepted by {{game.invitedPlayer.name}}
-  {{/if}}
+  <h2>{{game.id}}. {{game.redPlayer.name}} - {{game.blackPlayer.name}} (logged in: {{game.loggedInPlayer.name}})</h2>
 
-  {{#if game.gameOver}}{{game.winnerPlayer.name}} won the game{{/if}}
+  <div>
+    {{#if game.accepted}}
+      {{#each game.currentState}}
+        <div>
+          {{#each this}}
+            <code
+              onclick="clickSquare(this)"
+              data-row-index="{{this.rowIndex}}"
+              data-column-index="{{this.columnIndex}}"
+              {{#if this.piece}}class="{{this.piece.color}}"{{/if}}
+            >
+              {{#if this.piece}}
+                {{this.piece.label}}
+              {{else}}
+                .
+              {{/if}}
+            </code>
+          {{/each}}
+        </div>
+      {{/each}}
+    {{else}}
+      This game has not yet been accepted by {{game.invitedPlayer.name}}
+    {{/if}}
+  </div>
+
+  <p>
+    {{#if game.gameOver}}
+      {{game.winnerPlayer.name}} won the game
+    {{else}}
+      It's {{game.turnPlayer.name}}'s turn
+    {{/if}}
+  </p>
+
+  {{#unless game.gameOver}}
+    {{#if game.turnPlayerIsCheck}}
+      <p>It's check!</p>
+    {{/if}}
+  {{/unless}}
+
   <div id="error"></div>
 </body>
 </html>

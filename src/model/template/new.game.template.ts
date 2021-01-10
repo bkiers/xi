@@ -6,7 +6,7 @@ export class NewGameTemplate extends MailTemplate {
   constructor(readonly game: GameEntity) {
     super(
       'new_game',
-      game.invitedPlayer.email,
+      [game.invitedPlayer.email],
       'Xi - New challenge!',
       game,
       ['timePerMove', humanReadable(game.secondsPerMove)],

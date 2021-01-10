@@ -1,11 +1,12 @@
 import { Table } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNumber, IsObject, IsDate } from 'class-validator';
+import { IsBoolean, IsDate, IsNumber, IsObject } from 'class-validator';
 import { GameEntity } from './game.entity';
 import { UserRead } from '../user/user.read';
 import { MoveRead } from './move.read';
 import { SquareRead } from './square.read';
 import { Board } from '../model/board';
+import { Color } from '../model/color';
 
 @Table
 export class GameRead {
@@ -38,6 +39,10 @@ export class GameRead {
   readonly winnerPlayer: UserRead | null;
 
   @ApiProperty()
+  @IsObject()
+  readonly loggedInPlayer: UserRead;
+
+  @ApiProperty()
   @IsNumber()
   readonly secondsPerMove: number;
 
@@ -62,10 +67,14 @@ export class GameRead {
   readonly reversed: boolean;
 
   @ApiProperty()
+  @IsBoolean()
+  readonly turnPlayerIsCheck: boolean;
+
+  @ApiProperty()
   @IsObject()
   readonly currentState: SquareRead[][];
 
-  constructor(entity: GameEntity, forUserId: number | null = null) {
+  constructor(entity: GameEntity, forUserId: number) {
     this.id = entity.id;
     this.redPlayer = new UserRead(entity.redPlayer);
     this.blackPlayer = new UserRead(entity.blackPlayer);
@@ -74,6 +83,7 @@ export class GameRead {
     this.turnPlayer = new UserRead(entity.turnPlayer);
     this.winnerPlayer =
       entity.winnerPlayer === null ? null : new UserRead(entity.winnerPlayer);
+    this.loggedInPlayer = GameRead.getLoggedInPlayer(entity, forUserId);
     this.secondsPerMove = entity.secondsPerMove;
     this.clockRunsOutAt = entity.clockRunsOutAt;
     this.accepted = entity.accepted;
@@ -85,14 +95,29 @@ export class GameRead {
         ),
     );
     this.gameOver = entity.winnerPlayer !== null;
+    this.turnPlayerIsCheck = GameRead.isCheck(entity);
     this.reversed = forUserId === entity.blackPlayerId;
-    this.currentState = this.getCurrentState(entity, this.reversed);
+    this.currentState = GameRead.getCurrentState(entity, this.reversed);
   }
 
-  private getCurrentState(
+  private static getCurrentState(
     entity: GameEntity,
     reversed: boolean,
   ): SquareRead[][] {
+    const board = GameRead.getBoard(entity);
+
+    return board.state(reversed);
+  }
+
+  private static isCheck(entity: GameEntity): boolean {
+    const board = GameRead.getBoard(entity);
+    const color =
+      entity.turnPlayerId === entity.redPlayerId ? Color.Red : Color.Black;
+
+    return board.isCheck(color);
+  }
+
+  private static getBoard(entity: GameEntity): Board {
     const board = new Board();
 
     for (const move of entity.moves) {
@@ -104,6 +129,16 @@ export class GameRead {
       );
     }
 
-    return board.state(reversed);
+    return board;
+  }
+
+  private static getLoggedInPlayer(
+    entity: GameEntity,
+    userId: number,
+  ): UserRead | null {
+    const user =
+      userId === entity.redPlayerId ? entity.redPlayer : entity.blackPlayer;
+
+    return new UserRead(user);
   }
 }

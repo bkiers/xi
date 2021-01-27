@@ -119,15 +119,15 @@ export class GameService {
       );
     }
 
-    const turnColor =
-      gameEntity.turnPlayerId === gameEntity.redPlayerId
-        ? Color.Red
-        : Color.Black;
+    const turnColor = gameEntity.turnColor();
     const opponentColor = turnColor === Color.Red ? Color.Black : Color.Red;
+    const fromSquare = board.squareIndex(fromRowIndex, fromColumnIndex, true);
 
-    if (
-      !board.squareIndex(fromRowIndex, fromColumnIndex).isOccupiedBy(turnColor)
-    ) {
+    if (fromSquare === null) {
+      throw new Error(`That's an unoccupied square`);
+    }
+
+    if (fromSquare.isOccupiedBy(opponentColor)) {
       throw new Error(`It's ${turnColor}'s turn`);
     }
 
@@ -142,27 +142,19 @@ export class GameService {
       toColumnIndex: toColumnIndex,
     });
 
-    gameEntity.turnPlayerId =
-      turnColor == Color.Red
-        ? gameEntity.blackPlayerId
-        : gameEntity.redPlayerId;
-
-    gameEntity.clockRunsOutAt = new Date(
-      new Date().getTime() + gameEntity.secondsPerMove * 1000,
-    );
+    await gameEntity.switchTurn();
 
     if (
       board.isCheckmate(opponentColor) ||
       !board.hasPossibleMoves(opponentColor)
     ) {
-      gameEntity.winnerPlayerId = userId;
+      await gameEntity.setWinner(userId);
     }
 
-    await gameEntity.save();
-    await gameEntity.reload({ include: [{ all: true }] });
-
-    if (gameEntity.winnerPlayerId !== null) {
+    if (gameEntity.isGameOver()) {
       this.eventEmitter.emit('game.over', gameEntity);
+    } else {
+      this.eventEmitter.emit('move.created', gameEntity);
     }
 
     return gameEntity;

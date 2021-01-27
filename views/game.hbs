@@ -3,9 +3,28 @@
 <head>
   <meta charset="utf-8" />
   <title>Xi - Game {{game.id}}</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <style>
+    body {
+      padding: 10px;
+    }
+    #board-wrapper {
+      width: 450px;
+    }
+    table {
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+    td, tr, img  {
+      padding: 0;
+      margin: 0;
+      border: none;
+    }
     code {
       font-size: xxx-large;
+    }
+    .right {
+      float: right;
     }
     .red {
       color: red;
@@ -13,73 +32,231 @@
     .black {
       color: black;
     }
+    .piece {
+      position: absolute;
+      margin-top: -45px;
+      margin-left: 5px;
+      height: 40px;
+      width: 40px;
+    }
+    .highlight {
+      position: absolute;
+      height: 50px;
+      width: 50px;
+      display: none;
+    }
+    .square {
+      height: 50px;
+      width: 50px;
+      display: block;
+    }
+    #controls {
+      display: none;
+    }
+    .time-left-label {
+      margin-right: 25px;
+      margin-top: 4px;
+    }
   </style>
   <script>
-    let firstSquare = null;
+    let firstClick = null;
+    let secondClick = null;
+    let movedImgPiece = null;
+
+    let isTurnPlayer = {{game.isTurnPlayer}};
+    let ownColor = '{{game.ownColor}}';
+    {{#game.lastMove}}
+    let highlighted = [
+      [{{this.from.rowIndex}}, {{this.from.columnIndex}}],
+      [{{this.to.rowIndex}}, {{this.to.columnIndex}}]
+    ];
+    {{/game.lastMove}}
+    {{^game.lastMove}}
+    let highlighted = [];
+    {{/game.lastMove}}
+
+    function highlightSquares(highlight) {
+      if (highlighted.length === 0) {
+        return;
+      }
+
+      for (let s of highlighted) {
+        let square = document.getElementById(`highlight_${s[0]}_${s[1]}`);
+        square.style.display = highlight ? 'block' : 'none';
+      }
+    }
+
+    function toggleHighlighted(newHighlighted) {
+      highlightSquares(false);
+      highlighted = newHighlighted;
+      highlightSquares(true);
+    }
+
+    function confirmMove() {
+      if (!firstClick || !secondClick) {
+        return;
+      }
+
+      fetch(`/games/{{game.id}}/move/${firstClick[0]}/${firstClick[1]}/${secondClick[0]}/${secondClick[1]}/${confirm}`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        body: JSON.stringify({})
+      }).then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            document.getElementById('error').innerText = data.error;
+
+            let tdFrom = document.getElementById(`${firstClick[0]}_${firstClick[1]}`);
+            let tdTo = document.getElementById(`${secondClick[0]}_${secondClick[1]}`);
+
+            tdTo.removeChild(movedImgPiece);
+            tdFrom.appendChild(movedImgPiece);
+
+            movedImgPiece = null;
+            firstClick = null;
+            secondClick = null;
+            toggleHighlighted([]);
+          } else {
+            window.location.replace('/games/{{game.id}}');
+          }
+        });
+    }
 
     function clickSquare(square) {
       document.getElementById('error').innerText = '';
-      let clickedSquare = [square.dataset.rowIndex, square.dataset.columnIndex];
 
-      if (firstSquare === null) {
-        firstSquare = clickedSquare;
-      } else if (firstSquare[0] === clickedSquare[0] && firstSquare[1] === clickedSquare[1]) {
-        firstSquare = null;
-      } else {
-        fetch(`/games/{{game.id}}/move/${firstSquare[0]}/${firstSquare[1]}/${clickedSquare[0]}/${clickedSquare[1]}`, {
-          method: 'POST',
-          credentials: 'same-origin',
-          body: JSON.stringify({})
-        }).then(response => response.json())
-          .then(data => {
-            if (data.error) {
-              document.getElementById('error').innerText = data.error;
-              console.log(data.error)
-            } else {
-              window.location.replace('/games/{{game.id}}');
-            }
-          });
-
-        firstSquare = null;
+      if (!isTurnPlayer) {
+        return;
       }
 
-      console.log('firstSquare:', firstSquare);
+      let occupiedBy = square.dataset.occupiedBy;
+      let clickedSquare = [square.dataset.rowIndex, square.dataset.columnIndex];
+
+      if (firstClick === null) {
+        if (occupiedBy === ownColor) {
+          firstClick = clickedSquare;
+          toggleHighlighted([firstClick]);
+        }
+      } else if (firstClick[0] === clickedSquare[0] && firstClick[1] === clickedSquare[1]) {
+        firstClick = null;
+        toggleHighlighted([]);
+      } else if (secondClick !== null && secondClick[0] === clickedSquare[0] && secondClick[1] === clickedSquare[1]) {
+        let tdFrom = document.getElementById(`${firstClick[0]}_${firstClick[1]}`);
+        let tdTo = document.getElementById(`${secondClick[0]}_${secondClick[1]}`);
+
+        tdTo.removeChild(movedImgPiece);
+        tdFrom.appendChild(movedImgPiece);
+
+        movedImgPiece = null;
+        firstClick = null;
+        secondClick = null;
+        toggleHighlighted([]);
+
+        let controls = document.getElementById('controls');
+        controls.style.display = 'none';
+      } else {
+        secondClick = clickedSquare;
+        toggleHighlighted([firstClick, secondClick]);
+
+        let tdFrom = document.getElementById(`${firstClick[0]}_${firstClick[1]}`);
+        let tdTo = document.getElementById(`${secondClick[0]}_${secondClick[1]}`);
+        movedImgPiece = tdFrom.getElementsByClassName("piece")[0];
+
+        tdFrom.removeChild(movedImgPiece);
+        tdTo.appendChild(movedImgPiece);
+
+        let controls = document.getElementById('controls');
+        controls.style.display = 'block';
+      }
+    }
+
+    function humanReadable(seconds) {
+      let d = Math.floor(seconds / 86400);
+      let h = Math.floor((seconds % 86400) / 3600);
+      let m = Math.floor(((seconds % 86400) % 3600) / 60);
+      let s = Math.round(seconds % 60);
+
+      let result = '';
+
+      if (d > 0) {
+        result = `${d} day${d > 1 ? 's' : ''} `;
+      }
+
+      result += h > 0 ? h < 10 ? `0${h}:` : `${h}:` : '00:';
+      result += m > 0 ? m < 10 ? `0${m}:` : `${m}:` : '00:';
+      result += s > 0 ? s < 10 ? `0${s}` : `${s}` : '00';
+
+      return result;
+    }
+
+    if (!{{game.gameOver}} && {{game.accepted}}) {
+      let clockRunsOutAtSeconds = {{game.clockRunsOutAtSeconds}};
+      window.setInterval(function() {
+        let secondsToGo = clockRunsOutAtSeconds - Math.round(new Date().getTime() / 1000);
+        let elTimeLeft = document.getElementsByClassName('time-left-label')[0];
+        elTimeLeft.innerHTML = humanReadable(secondsToGo);
+      }, 1000);
     }
   </script>
 </head>
-<body>
-  <h2>{{game.id}}. {{game.redPlayer.name}} - {{game.blackPlayer.name}} (logged in: {{game.loggedInPlayer.name}})</h2>
-
-  <div>
+<body onload="highlightSquares(true)">
+  <div id="board-wrapper">
+    <h3 class="text-monospace">
+      {{#if game.reversed}}
+        {{game.redPlayer.name}}
+        {{#if game.turnRed}}
+          <small class="text-muted text-monospace time-left-label right"></small>
+        {{/if}}
+      {{else}}
+        {{game.blackPlayer.name}}
+        {{#if game.turnBlack}}
+          <small class="text-muted text-monospace time-left-label right"></small>
+        {{/if}}
+      {{/if}}
+    </h3>
     {{#if game.accepted}}
-      {{#each game.currentState}}
-        <div>
-          {{#each this}}
-            <code
-              onclick="clickSquare(this)"
-              data-row-index="{{this.rowIndex}}"
-              data-column-index="{{this.columnIndex}}"
-              {{#if this.piece}}class="{{this.piece.color}}"{{/if}}
-            >
-              {{#if this.piece}}
-                {{this.piece.label}}
-              {{else}}
-                .
-              {{/if}}
-            </code>
-          {{/each}}
-        </div>
-      {{/each}}
+      <table>
+        {{#each game.currentState}}
+          <tr>
+            {{#each this}}
+              <td
+                id="{{this.rowIndex}}_{{this.columnIndex}}"
+                onclick="clickSquare(this)"
+                data-row-index="{{this.rowIndex}}"
+                data-column-index="{{this.columnIndex}}"
+                data-occupied-by="{{this.occupiedBy}}"
+              >
+                <img id="highlight_{{this.rowIndex}}_{{this.columnIndex}}" src="/images/pieces/highlight.svg" class="highlight"/>
+                <img src="/images/board/{{this.tileName}}" class="square"/>
+                {{#if this.piece}}
+                  <img src="/images/pieces/{{this.piece.pieceName}}" class="piece"/>
+                {{/if}}
+              </td>
+            {{/each}}
+          </tr>
+        {{/each}}
+      </table>
     {{else}}
       This game has not yet been accepted by {{game.invitedPlayer.name}}
     {{/if}}
+    <h3 class="text-monospace">
+      {{#if game.reversed}}
+        {{game.blackPlayer.name}}
+        {{#if game.turnBlack}}
+          <small class="text-muted text-monospace time-left-label right"></small>
+        {{/if}}
+      {{else}}
+        {{game.redPlayer.name}}
+        {{#if game.turnRed}}
+          <small class="text-muted text-monospace time-left-label right"></small>
+        {{/if}}
+      {{/if}}
+    </h3>
   </div>
 
   <p>
     {{#if game.gameOver}}
       {{game.winnerPlayer.name}} won the game
-    {{else}}
-      It's {{game.turnPlayer.name}}'s turn
     {{/if}}
   </p>
 
@@ -88,6 +265,10 @@
       <p>It's check!</p>
     {{/if}}
   {{/unless}}
+
+  <div id="controls">
+    <button onclick="confirmMove()">confirm</button>
+  </div>
 
   <div id="error"></div>
 </body>

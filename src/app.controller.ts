@@ -73,20 +73,20 @@ export class AppController {
   @Get('/games/:id')
   @ApiExcludeEndpoint()
   @Render('game')
-  async game(@Param('id') id: number, @Request() req) {
+  async game(@Param('id') id: string, @Request() req) {
     const game = await this.http<GameRead>(`/api/games/${id}`, 'get', req);
 
     return { game: game };
   }
 
-  @Post('/games/:id/move/:fr/:fc/:tr/:tc')
+  @Post('/games/:id/move/:fr/:fc/:tr/:tc/:confirm')
   @ApiExcludeEndpoint()
   async move(
-    @Param('id') id: number,
-    @Param('fr') fromRowIndex: number,
-    @Param('fc') fromColumnIndex: number,
-    @Param('tr') toRowIndex: number,
-    @Param('tc') toColumnIndex: number,
+    @Param('id') id: string,
+    @Param('fr') fromRowIndex: string,
+    @Param('fc') fromColumnIndex: string,
+    @Param('tr') toRowIndex: string,
+    @Param('tc') toColumnIndex: string,
     @Request() req,
     @Res() res,
   ) {
@@ -96,10 +96,10 @@ export class AppController {
         'post',
         req,
         new MoveCreate(
-          fromRowIndex,
-          fromColumnIndex,
-          toRowIndex,
-          toColumnIndex,
+          parseInt(fromRowIndex, 10),
+          parseInt(fromColumnIndex, 10),
+          parseInt(toRowIndex, 10),
+          parseInt(toColumnIndex, 10),
         ),
       );
       res.status(200).json({ error: null });
@@ -111,7 +111,7 @@ export class AppController {
   @Get('/games/:id/accept')
   @ApiExcludeEndpoint()
   @Render('accept')
-  async acceptGame(@Param('id') id: number, @Request() req) {
+  async acceptGame(@Param('id') id: string, @Request() req) {
     const game = await this.http<GameRead>(`/api/games/${id}`, 'get', req);
 
     return {
@@ -122,7 +122,7 @@ export class AppController {
 
   @Post('/games/:id/accept')
   @ApiExcludeEndpoint()
-  async doAcceptGame(@Param('id') id: number, @Request() req, @Res() res) {
+  async doAcceptGame(@Param('id') id: string, @Request() req, @Res() res) {
     try {
       await this.http(`/api/games/${id}/accept`, 'post', req);
 

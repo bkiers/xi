@@ -19,6 +19,7 @@ import { TaskModule } from './task/task.module';
 import { LoginCheckMiddleware } from './middleware/login.check.middleware';
 import { EmailModule } from './email/email.module';
 import { ResetPasswordEntity } from './auth/reset.password.entity';
+import { NotificationEntity } from './entity/notification.entity';
 
 @Module({
   imports: [
@@ -27,7 +28,13 @@ import { ResetPasswordEntity } from './auth/reset.password.entity';
       storage: process.env.XI_DB_STORAGE,
       logging: process.env.XI_DB_LOGGING === 'true' ? console.log : null,
       autoLoadModels: true,
-      models: [UserEntity, MoveEntity, GameEntity, ResetPasswordEntity],
+      models: [
+        UserEntity,
+        MoveEntity,
+        GameEntity,
+        ResetPasswordEntity,
+        NotificationEntity,
+      ],
     }),
     EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),

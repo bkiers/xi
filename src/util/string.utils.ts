@@ -15,7 +15,7 @@ export function humanReadable(seconds: number): string {
   const d = Math.floor(seconds / 86400);
   const h = Math.floor((seconds % 86400) / 3600);
   const m = Math.floor(((seconds % 86400) % 3600) / 60);
-  const s = seconds % 60;
+  const s = Math.round(seconds % 60);
 
   if (d > 0) {
     parts.push(`${d} day${d > 1 ? 's' : ''}`);

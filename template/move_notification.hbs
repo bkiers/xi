@@ -292,10 +292,10 @@
                 <tr>
                   <td>
                     <p>Hey {{turnPlayer.name}},</p>
-                    {{#if items.length}}
-                      <p>{{otherPlayerName}} just mde a move, it's your turn to make in game {{id}}</p>
+                    {{#if moves.length}}
+                      <p>{{otherPlayerName}} just mde a move, it's your turn in game {{id}}</p>
                     {{else}}
-                      <p>You're first to move in the just accepted game {{id}}</p>
+                      <p>You're first to move in game {{id}}</p>
                     {{/if}}
                     <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
                       <tbody>
@@ -304,7 +304,7 @@
                           <table border="0" cellpadding="0" cellspacing="0">
                             <tbody>
                             <tr>
-                              <td> <a href="{{baseUrl}}/games/{{id}}" target="_blank">View game {{id}}</a> </td>
+                              <td> <a href="{{baseUrl}}/games/{{id}}" target="_blank">View game</a> </td>
                             </tr>
                             </tbody>
                           </table>

@@ -6,15 +6,12 @@ import {
   HttpStatus,
   Res,
 } from '@nestjs/common';
-import { Response } from 'express';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginRequest } from '../model/request/login.request';
 import { LoginResponse } from '../model/response/login.response';
 import { RequestResetPasswordRequest } from '../model/request/request.reset.password.request';
 import { ResetPasswordRequest } from '../model/request/reset.password.request';
-import { ResetPasswordEntity } from './reset.password.entity';
-import { UserEntity } from '../user/user.entity';
 import { UserService } from '../user/user.service';
 import { UserRead } from '../user/user.read';
 

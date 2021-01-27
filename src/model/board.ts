@@ -213,7 +213,7 @@ export class Board {
     rowIndex: number,
     columnIndex: number,
     returnNull = false,
-  ): Square {
+  ): Square | null {
     if (rowIndex < 0 || rowIndex > 9 || columnIndex < 0 || columnIndex > 8) {
       if (returnNull) {
         return null;
@@ -227,12 +227,17 @@ export class Board {
     return this.squares[rowIndex][columnIndex];
   }
 
+  isOccupied(rowIndex: number, columnIndex: number): boolean {
+    const square = this.squareIndex(rowIndex, columnIndex, true);
+    return square !== null && square.isOccupied();
+  }
+
   state(reversed: boolean): SquareRead[][] {
     const state = [];
 
     for (const row of this.squares) {
       const readRow = row.map(
-        (s) => new SquareRead(s.rowIndex, s.columnIndex, s.piece),
+        (s) => new SquareRead(s.rowIndex, s.columnIndex, s.piece, reversed),
       );
       state.push(reversed ? readRow.reverse() : readRow);
     }

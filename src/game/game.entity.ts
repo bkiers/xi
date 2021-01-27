@@ -12,6 +12,7 @@ import {
 } from 'sequelize-typescript';
 import { MoveEntity } from './move.entity';
 import { UserEntity } from '../user/user.entity';
+import { Color } from '../model/color';
 
 @Table
 export class GameEntity extends Model<GameEntity> {
@@ -76,7 +77,7 @@ export class GameEntity extends Model<GameEntity> {
   secondsPerMove: number;
 
   @Column
-  clockRunsOutAt: Date;
+  clockRunsOutAt: Date | null;
 
   @HasMany(() => MoveEntity)
   moves: MoveEntity[];
@@ -86,4 +87,33 @@ export class GameEntity extends Model<GameEntity> {
 
   @UpdatedAt
   updatedAt: Date;
+
+  async setWinner(playerId: number): Promise<GameEntity> {
+    this.winnerPlayerId = playerId;
+    // TODO update elo
+
+    await this.save();
+    return this.reload({ include: [{ all: true }] });
+  }
+
+  async switchTurn(): Promise<GameEntity> {
+    const turnColor = this.turnColor();
+    this.turnPlayerId =
+      turnColor == Color.Red ? this.blackPlayerId : this.redPlayerId;
+
+    this.clockRunsOutAt = new Date(
+      new Date().getTime() + this.secondsPerMove * 1000,
+    );
+
+    await this.save();
+    return this.reload({ include: [{ all: true }] });
+  }
+
+  isGameOver(): boolean {
+    return this.winnerPlayerId !== null;
+  }
+
+  turnColor(): Color {
+    return this.turnPlayerId === this.redPlayerId ? Color.Red : Color.Black;
+  }
 }

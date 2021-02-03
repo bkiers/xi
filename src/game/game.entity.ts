@@ -69,6 +69,14 @@ export class GameEntity extends Model<GameEntity> {
   @BelongsTo(() => UserEntity, 'winnerPlayerId')
   winnerPlayer: UserEntity | null;
 
+  @ForeignKey(() => UserEntity)
+  @Index('idx_game_status')
+  @Column
+  acceptedDrawPlayerId: number | null;
+
+  @BelongsTo(() => UserEntity, 'acceptedDrawPlayerId')
+  acceptedDrawPlayer: UserEntity | null;
+
   @Column
   eloRatingChange: number | null;
 
@@ -96,6 +104,14 @@ export class GameEntity extends Model<GameEntity> {
     return this.reload({ include: [{ all: true }] });
   }
 
+  async setAcceptedDrawPlayerId(playerId: number): Promise<GameEntity> {
+    this.acceptedDrawPlayerId = playerId;
+    // TODO update elo
+
+    await this.save();
+    return this.reload({ include: [{ all: true }] });
+  }
+
   async switchTurn(): Promise<GameEntity> {
     const turnColor = this.turnColor();
     this.turnPlayerId =
@@ -110,10 +126,26 @@ export class GameEntity extends Model<GameEntity> {
   }
 
   isGameOver(): boolean {
-    return this.winnerPlayerId !== null;
+    return this.winnerPlayerId !== null || this.acceptedDrawPlayerId !== null;
   }
 
   turnColor(): Color {
     return this.turnPlayerId === this.redPlayerId ? Color.Red : Color.Black;
+  }
+
+  isPlaying(userId: number): boolean {
+    return this.redPlayerId === userId || this.blackPlayerId === userId;
+  }
+
+  opponentOf(loggedInUserId: number): number | null {
+    if (loggedInUserId === this.redPlayerId) {
+      return this.blackPlayerId;
+    }
+
+    if (loggedInUserId === this.blackPlayerId) {
+      return this.redPlayerId;
+    }
+
+    return null;
   }
 }

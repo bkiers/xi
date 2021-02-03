@@ -132,7 +132,7 @@ export class GameRead {
     );
     this.lastMove =
       this.moves.length === 0 ? null : this.moves[this.moves.length - 1];
-    this.gameOver = entity.winnerPlayer !== null;
+    this.gameOver = entity.isGameOver();
     this.turnPlayerIsCheck = GameRead.isCheck(entity);
     this.isTurnPlayer = forUserId === entity.turnPlayerId;
     this.reversed = forUserId === entity.blackPlayerId;

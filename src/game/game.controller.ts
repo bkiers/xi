@@ -53,6 +53,40 @@ export class GameController {
     return new GameRead(entity, req.user.userId);
   }
 
+  @Post(':id/draw/propose')
+  @ApiOperation({ summary: 'Propose a draw' })
+  @ApiResponse({
+    status: 200,
+  })
+  async proposeDraw(@Request() req, @Param('id') id: number) {
+    try {
+      await this.gameService.proposeDraw(id, req.user.userId);
+    } catch (e) {
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Post(':id/draw/:accepted')
+  @ApiOperation({ summary: 'Accept or reject a draw proposal' })
+  @ApiResponse({
+    status: 200,
+  })
+  async acceptOrRejectDrawProposal(
+    @Request() req,
+    @Param('id') id: number,
+    @Param('accepted') accepted: string,
+  ) {
+    try {
+      await this.gameService.acceptOrRejectDrawProposal(
+        id,
+        req.user.userId,
+        accepted === 'true',
+      );
+    } catch (e) {
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   @Post(':id/accept')
   @ApiOperation({ summary: 'Accept a game invitation' })
   @ApiResponse({

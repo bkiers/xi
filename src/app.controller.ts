@@ -21,6 +21,7 @@ import { ResetPasswordRequest } from './model/request/reset.password.request';
 import { UserRead } from './user/user.read';
 import { MoveCreate } from './game/move.create';
 import { GameCreate } from './game/game.create';
+import { DrawProposalRequest } from './model/request/draw.proposal.request';
 
 @Controller()
 export class AppController {
@@ -77,6 +78,17 @@ export class AppController {
     const game = await this.http<GameRead>(`/api/games/${id}`, 'get', req);
 
     return { game: game };
+  }
+
+  @Post('/games/:id/draw/propose')
+  @ApiExcludeEndpoint()
+  async proposeDraw(@Param('id') id: string, @Request() req, @Res() res) {
+    try {
+      await this.http(`/api/games/${id}/draw/propose`, 'post', req);
+      res.status(200).json({ error: null });
+    } catch (e) {
+      res.status(400).json({ error: e.response.data.message });
+    }
   }
 
   @Post('/games/:id/move/:fr/:fc/:tr/:tc/:confirm')
@@ -194,6 +206,34 @@ export class AppController {
     res.render('request-reset-password', { confirmed: true });
   }
 
+  @Get('/games/:id/draw')
+  @ApiExcludeEndpoint()
+  @Render('draw')
+  async draw(@Param('id') id: string) {
+    return { gameId: id, confirmed: false };
+  }
+
+  @Post('/games/:id/draw')
+  @ApiExcludeEndpoint()
+  async doDraw(
+    @Param('id') id: string,
+    @Body() drawProposalRequest: DrawProposalRequest,
+    @Request() req,
+    @Res() res,
+  ) {
+    try {
+      await this.http(
+        `/api/games/${id}/draw/${drawProposalRequest.accepted}`,
+        'post',
+        req,
+      );
+
+      res.render('draw', { gameId: id, confirmed: true });
+    } catch (e) {
+      res.render('draw', { gameId: id, error: e.response.data.message });
+    }
+  }
+
   @Get('/reset-password/:code')
   @ApiExcludeEndpoint()
   @Render('reset-password')
@@ -219,9 +259,9 @@ export class AppController {
 
       loginRequest.email = user.email;
 
-      return res.render('login', { data: loginRequest });
+      res.render('login', { data: loginRequest });
     } catch (e) {
-      return res.render('reset-password', { error: e.response.data.message });
+      res.render('reset-password', { error: e.response.data.message });
     }
   }
 
@@ -233,7 +273,7 @@ export class AppController {
   ): Promise<T> {
     const axiosResponse = await this.httpService
       .request({
-        baseURL: `http://localhost:${process.env.XI_PORT}`,
+        baseURL: `http://localhost:${process.env.XI_PORT}`, // TODO url
         url: url,
         method: method as Method,
         headers: { Authorization: `Bearer ${req?.cookies['accessToken']}` },

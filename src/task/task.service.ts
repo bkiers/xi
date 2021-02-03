@@ -14,7 +14,11 @@ export class TaskService {
   async checkClockTimes() {
     try {
       const unfinishedGames = await GameEntity.findAll({
-        where: { winnerPlayerId: null, accepted: true },
+        where: {
+          winnerPlayerId: null,
+          acceptedDrawPlayerId: null,
+          accepted: true,
+        },
         include: [{ all: true }],
       });
 

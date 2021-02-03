@@ -5,6 +5,7 @@ import { GameEntity } from './game.entity';
 import { Color } from '../model/color';
 import { Board } from '../model/board';
 import { MoveEntity } from './move.entity';
+import { DrawProposalEntity } from './draw.proposal.entity';
 
 @Injectable()
 export class GameService {
@@ -16,6 +17,87 @@ export class GameService {
 
   async findAll(): Promise<GameEntity[]> {
     return GameEntity.findAll({ include: [{ all: true }] });
+  }
+
+  async proposeDraw(
+    gameId: number,
+    loggedInUserId: number,
+  ): Promise<DrawProposalEntity> {
+    const game = await this.findById(gameId);
+
+    if (game === null) {
+      throw new Error('Could not find that game');
+    }
+
+    if (!game.isPlaying(loggedInUserId)) {
+      throw new Error("You can't propose a draw for that game");
+    }
+
+    if (game.isGameOver()) {
+      throw new Error('That game is already over');
+    }
+
+    const existingDrawProposal = await DrawProposalEntity.findOne({
+      where: { gameId: gameId, moveNumber: game.moves.length, accepted: null },
+    });
+
+    if (existingDrawProposal !== null) {
+      throw new Error('A proposal for that game is still pending');
+    }
+
+    const drawProposal = await DrawProposalEntity.create({
+      gameId: gameId,
+      moveNumber: game.moves.length,
+      proposalSentByUserId: loggedInUserId,
+      proposalAcceptByUserId: game.opponentOf(loggedInUserId),
+    });
+
+    await drawProposal.reload({ include: [{ all: true }] });
+
+    this.eventEmitter.emit('draw.proposal.created', drawProposal);
+
+    return drawProposal;
+  }
+
+  async acceptOrRejectDrawProposal(
+    gameId: number,
+    loggedInUserId: number,
+    accepted: boolean,
+  ): Promise<DrawProposalEntity> {
+    const game = await this.findById(gameId);
+
+    if (game === null) {
+      throw new Error('Could not find that game');
+    }
+
+    if (game.isGameOver()) {
+      throw new Error('That game is already over');
+    }
+
+    const existingDrawProposal = await DrawProposalEntity.findOne({
+      where: { gameId: gameId, moveNumber: game.moves.length, accepted: null },
+    });
+
+    if (existingDrawProposal === null) {
+      throw new Error('Could not find a pending draw proposal for that game');
+    }
+
+    if (existingDrawProposal.proposalAcceptByUserId !== loggedInUserId) {
+      throw new Error('That draw proposal cannot be accepted by you');
+    }
+
+    if (accepted) {
+      await game.setAcceptedDrawPlayerId(loggedInUserId);
+    }
+
+    existingDrawProposal.accepted = accepted;
+
+    await existingDrawProposal.save();
+    await existingDrawProposal.reload({ include: [{ all: true }] });
+
+    this.eventEmitter.emit('draw.proposal.answer', existingDrawProposal);
+
+    return existingDrawProposal;
   }
 
   async create(
@@ -78,7 +160,7 @@ export class GameService {
       new Date().getTime() + entity.secondsPerMove * 1000,
     );
 
-    entity.save();
+    await entity.save();
 
     this.eventEmitter.emit('game.accepted', entity);
 
@@ -99,7 +181,7 @@ export class GameService {
       throw new Error(`No such game with id ${gameId}`);
     }
 
-    if (gameEntity.winnerPlayerId !== null) {
+    if (gameEntity.isGameOver()) {
       throw new Error('This game is already over');
     }
 

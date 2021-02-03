@@ -10,6 +10,9 @@ import { ResetPasswordTemplate } from '../model/template/reset.password.template
 import { GameOverTemplate } from '../model/template/game.over.template';
 import { ClockAlmostUp } from '../model/template/clock.almost.up';
 import { ClockRanOut } from '../model/template/clock.ran.out';
+import { DrawProposalEntity } from '../game/draw.proposal.entity';
+import { ProposeDraw } from '../model/template/propose.draw';
+import { DrawProposalAnswer } from '../model/template/draw.proposal.answer';
 
 @Injectable()
 export class EmailEventBus {
@@ -107,6 +110,40 @@ export class EmailEventBus {
     } catch (e) {
       this.logger.error(
         `Could not send email for event 'clock.almost.up': ${e}`,
+      );
+    }
+  }
+
+  @OnEvent('draw.proposal.created', { async: true })
+  private async handledDawProposalCreatedEvent(
+    drawProposal: DrawProposalEntity,
+  ) {
+    try {
+      this.logger.log(
+        `GAME[${drawProposal.gameId}] :: Going to send an email for 'draw.proposal.created'`,
+      );
+
+      await this.emailClient.sendTemplate(new ProposeDraw(drawProposal));
+    } catch (e) {
+      this.logger.error(
+        `Could not send email for event 'draw.proposal.created': ${e}`,
+      );
+    }
+  }
+
+  @OnEvent('draw.proposal.answer', { async: true })
+  private async handledDawProposalAnswerEvent(
+    drawProposal: DrawProposalEntity,
+  ) {
+    try {
+      this.logger.log(
+        `GAME[${drawProposal.gameId}] :: Going to send an email for 'draw.proposal.answer'`,
+      );
+
+      await this.emailClient.sendTemplate(new DrawProposalAnswer(drawProposal));
+    } catch (e) {
+      this.logger.error(
+        `Could not send email for event 'draw.proposal.answer': ${e}`,
       );
     }
   }

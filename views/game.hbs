@@ -22,6 +22,9 @@
       margin: 0;
       border: none;
     }
+    #controls {
+      padding-bottom: 5px;
+    }
     code {
       font-size: xxx-large;
     }
@@ -45,9 +48,6 @@
       height: 50px;
       width: 50px;
       display: block;
-    }
-    #controls {
-      display: none;
     }
     .time-left-label {
       margin-right: 25px;
@@ -88,6 +88,25 @@
       highlightSquares(true);
     }
 
+    function confirmDraw() {
+      fetch(`/games/{{game.id}}/draw/propose`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        body: JSON.stringify({})
+      }).then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            displayMessage(data.error, 'danger');
+          } else {
+            displayMessage('Proposal sent', 'primary');
+          }
+        });
+    }
+
+    function confirmForfeit() {
+      console.log('forfeit');
+    }
+
     function confirmMove() {
       if (!firstClick || !secondClick) {
         return;
@@ -100,28 +119,9 @@
       }).then(response => response.json())
         .then(data => {
           if (data.error) {
-            let controls = document.getElementById('controls');
-            controls.style.display = 'none';
+            document.getElementById('move-button').disabled = true;
 
-            let errorDiv = document.getElementById('error');
-
-            let alertDiv = document.createElement('div');
-            alertDiv.className = 'alert alert-danger alert-dismissible fade show';
-            alertDiv.setAttribute('role', 'alert');
-            let errorSpan = document.createElement('span');
-            errorSpan.innerText = data.error;
-            let closeButton = document.createElement('button');
-            closeButton.setAttribute('type', 'button');
-            closeButton.setAttribute('data-dismiss', 'alert');
-            closeButton.setAttribute('aria-label', 'alert');
-            closeButton.className = 'close';
-            let closeSpan = document.createElement('span');
-            closeSpan.setAttribute('aria-hidden', 'true');
-            closeSpan.innerHTML = '&times;';
-            closeButton.appendChild(closeSpan);
-            alertDiv.appendChild(errorSpan);
-            alertDiv.appendChild(closeButton);
-            errorDiv.appendChild(alertDiv);
+            displayMessage(data.error, 'danger');
 
             let tdFrom = document.getElementById(`${firstClick[0]}_${firstClick[1]}`);
             let tdTo = document.getElementById(`${secondClick[0]}_${secondClick[1]}`);
@@ -169,8 +169,7 @@
         secondClick = null;
         toggleHighlighted([]);
 
-        let controls = document.getElementById('controls');
-        controls.style.display = 'none';
+        document.getElementById('move-button').disabled = true;
       } else {
         secondClick = clickedSquare;
         toggleHighlighted([firstClick, secondClick]);
@@ -182,9 +181,29 @@
         tdFrom.removeChild(movedImgPiece);
         tdTo.appendChild(movedImgPiece);
 
-        let controls = document.getElementById('controls');
-        controls.style.display = 'block';
+        document.getElementById('move-button').disabled = false;
       }
+    }
+
+    function displayMessage(message, type) {
+      let errorDiv = document.getElementById('error');
+      let alertDiv = document.createElement('div');
+      alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+      alertDiv.setAttribute('role', 'alert');
+      let errorSpan = document.createElement('span');
+      errorSpan.innerText = message;
+      let closeButton = document.createElement('button');
+      closeButton.setAttribute('type', 'button');
+      closeButton.setAttribute('data-dismiss', 'alert');
+      closeButton.setAttribute('aria-label', 'alert');
+      closeButton.className = 'close';
+      let closeSpan = document.createElement('span');
+      closeSpan.setAttribute('aria-hidden', 'true');
+      closeSpan.innerHTML = '&times;';
+      closeButton.appendChild(closeSpan);
+      alertDiv.appendChild(errorSpan);
+      alertDiv.appendChild(closeButton);
+      errorDiv.appendChild(alertDiv);
     }
 
     function humanReadable(seconds) {
@@ -271,7 +290,12 @@
     </h3>
     <p>
       {{#if game.gameOver}}
-        {{game.winnerPlayer.name}} won the game
+        {{#game.winnerPlayer}}
+          {{name}} won the game
+        {{/game.winnerPlayer}}
+        {{^game.winnerPlayer}}
+          This game was a draw
+        {{/game.winnerPlayer}}
       {{/if}}
     </p>
 
@@ -282,7 +306,30 @@
     {{/unless}}
 
     <div id="controls">
-      <button onclick="confirmMove()">confirm</button>
+      <span class="dropdown">
+        <button id="move-button" disabled class="btn btn-primary dropdown-toggle btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          move
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <a class="dropdown-item" onclick="confirmMove()" href="#">confirm</a>
+        </div>
+      </span>
+      <span class="dropdown">
+        <button class="btn btn-warning dropdown-toggle btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          draw
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <a class="dropdown-item" onclick="confirmDraw()" href="#">confirm</a>
+        </div>
+      </span>
+      <span class="dropdown">
+        <button class="btn btn-danger dropdown-toggle btn-sm" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          forfeit
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <a class="dropdown-item" onclick="confirmForfeit()" href="#">confirm</a>
+        </div>
+      </span>
     </div>
 
     <div id="error"></div>

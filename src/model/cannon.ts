@@ -16,22 +16,22 @@ export class Cannon extends Piece {
   eyeingSquares(current: Square, board: Board): Square[] {
     const squares: Square[] = [];
 
-    this.appendTo(
+    this.appendToWithJump(
       squares,
       super.squares(current, board, Array(9).fill(Direction.N)),
     );
 
-    this.appendTo(
+    this.appendToWithJump(
       squares,
       super.squares(current, board, Array(8).fill(Direction.E)),
     );
 
-    this.appendTo(
+    this.appendToWithJump(
       squares,
       super.squares(current, board, Array(9).fill(Direction.S)),
     );
 
-    this.appendTo(
+    this.appendToWithJump(
       squares,
       super.squares(current, board, Array(8).fill(Direction.W)),
     );
@@ -39,8 +39,7 @@ export class Cannon extends Piece {
     return squares;
   }
 
-  // [x, x, x, S, x, x, s]
-  private appendTo(squares: Square[], newSquares: Square[]): void {
+  private appendToWithJump(squares: Square[], newSquares: Square[]): void {
     let hasJumped = false;
 
     for (const square of newSquares) {

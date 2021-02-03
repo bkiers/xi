@@ -20,6 +20,7 @@ import { LoginCheckMiddleware } from './middleware/login.check.middleware';
 import { EmailModule } from './email/email.module';
 import { ResetPasswordEntity } from './auth/reset.password.entity';
 import { NotificationEntity } from './entity/notification.entity';
+import { DrawProposalEntity } from './game/draw.proposal.entity';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { NotificationEntity } from './entity/notification.entity';
         GameEntity,
         ResetPasswordEntity,
         NotificationEntity,
+        DrawProposalEntity,
       ],
     }),
     EventEmitterModule.forRoot(),

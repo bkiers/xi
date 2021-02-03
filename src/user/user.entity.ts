@@ -1,4 +1,12 @@
-import { Column, Index, Model, Table, Unique } from 'sequelize-typescript';
+import {
+  AllowNull,
+  Column,
+  Default,
+  Index,
+  Model,
+  Table,
+  Unique,
+} from 'sequelize-typescript';
 
 @Table
 export class UserEntity extends Model<UserEntity> {
@@ -14,4 +22,9 @@ export class UserEntity extends Model<UserEntity> {
 
   @Column
   isAdmin: boolean;
+
+  @AllowNull(false)
+  @Default(1200)
+  @Column
+  eloRating: number;
 }

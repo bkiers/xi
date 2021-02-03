@@ -27,7 +27,7 @@ export class Horse extends Piece {
     jumps.push(super.squares(current, board, [Direction.N, Direction.NW]));
 
     for (const jump of jumps) {
-      if (jump.length === 2 && jump[0] != null && !jump[0].isOccupied()) {
+      if (jump.length === 2 && !jump[0].isOccupied()) {
         squares.push(jump[1]);
       }
     }

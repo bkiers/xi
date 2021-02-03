@@ -21,6 +21,7 @@ export class Adviser extends Piece {
     squares = squares.concat(super.squares(current, board, [Direction.SW]));
     squares = squares.concat(super.squares(current, board, [Direction.NW]));
 
+    // Return all squares not occupied by the own color and are inside the own palace
     return squares.filter(
       (s) =>
         s !== null &&

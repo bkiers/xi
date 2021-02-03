@@ -23,11 +23,8 @@ export class Elephant extends Piece {
     diagonals.push(super.squares(current, board, [Direction.NW, Direction.NW]));
 
     for (const diagonal of diagonals) {
-      if (
-        diagonal.length === 2 &&
-        diagonal[0] != null &&
-        !diagonal[0].isOccupied()
-      ) {
+      // There must be 2 squares, and the first one cannot be occupied
+      if (diagonal.length === 2 && !diagonal[0].isOccupied()) {
         squares.push(diagonal[1]);
       }
     }

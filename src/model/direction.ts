@@ -1,5 +1,3 @@
-import { Color } from './color';
-
 export enum Direction {
   N,
   NE,

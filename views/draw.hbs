@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Xi - Draw</title>
+</head>
+<body>
+  <h1>Draw</h1>
+  {{#if confirmed}}
+    <p>You opponent was notified of your answer.</p>
+    <p>Go to <a href="/games">games</a>.</p>
+  {{else}}
+    <p>
+      Accept or reject a draw in <a href="/games/{{gameId}}">game {{gameId}}</a>?
+      <form method="POST" action="/games/{{gameId}}/draw">
+        <div>
+          <input type="radio" id="huey" name="accepted" value="false" checked>
+          <label for="dewey">reject</label>
+        </div>
+        <div>
+          <input type="radio" id="dewey" name="accepted" value="true">
+          <label for="dewey">accept</label>
+        </div>
+        <div>
+          <br>
+          <input type="submit" value="save"/>
+        </div>
+      </form>
+    </p>
+  {{/if}}
+
+  {{#if error}}
+    <p>{{error}}</p>
+  {{/if}}
+</body>
+</html>

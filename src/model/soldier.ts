@@ -19,6 +19,7 @@ export class Soldier extends Piece {
     squares = squares.concat(super.squares(current, board, [Direction.N]));
 
     if (!current.isOnOwnSide(this.color)) {
+      // When on the enemy side, append squares left- and right of the current square
       squares = squares.concat(super.squares(current, board, [Direction.E]));
       squares = squares.concat(super.squares(current, board, [Direction.W]));
     }

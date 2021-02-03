@@ -91,6 +91,17 @@ export class AppController {
     }
   }
 
+  @Post('/games/:id/forfeit')
+  @ApiExcludeEndpoint()
+  async forfeit(@Param('id') id: string, @Request() req, @Res() res) {
+    try {
+      await this.http(`/api/games/${id}/forfeit`, 'post', req);
+      res.status(200).json({ error: null });
+    } catch (e) {
+      res.status(400).json({ error: e.response.data.message });
+    }
+  }
+
   @Post('/games/:id/move/:fr/:fc/:tr/:tc/:confirm')
   @ApiExcludeEndpoint()
   async move(
@@ -273,7 +284,7 @@ export class AppController {
   ): Promise<T> {
     const axiosResponse = await this.httpService
       .request({
-        baseURL: `http://localhost:${process.env.XI_PORT}`, // TODO url
+        baseURL: `${process.env.XI_BASE_URL}:${process.env.XI_PORT}`,
         url: url,
         method: method as Method,
         headers: { Authorization: `Bearer ${req?.cookies['accessToken']}` },

@@ -19,6 +19,29 @@ export class GameService {
     return GameEntity.findAll({ include: [{ all: true }] });
   }
 
+  async forfeit(gameId: number, loggedInUserId: number): Promise<GameEntity> {
+    const game = await this.findById(gameId);
+
+    if (game === null) {
+      throw new Error('Could not find that game');
+    }
+
+    if (!game.isPlaying(loggedInUserId)) {
+      throw new Error("You can't forfeit that game");
+    }
+
+    if (game.isGameOver()) {
+      throw new Error('That game is already over');
+    }
+
+    const opponentId = game.opponentOf(loggedInUserId);
+    const entity = await game.setWinner(opponentId);
+
+    this.eventEmitter.emit('game.forfeited', entity);
+
+    return entity;
+  }
+
   async proposeDraw(
     gameId: number,
     loggedInUserId: number,

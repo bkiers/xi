@@ -13,6 +13,7 @@ import { ClockRanOut } from '../model/template/clock.ran.out';
 import { DrawProposalEntity } from '../game/draw.proposal.entity';
 import { ProposeDraw } from '../model/template/propose.draw';
 import { DrawProposalAnswer } from '../model/template/draw.proposal.answer';
+import { GameForfeited } from '../model/template/game.forfeited';
 
 @Injectable()
 export class EmailEventBus {
@@ -144,6 +145,21 @@ export class EmailEventBus {
     } catch (e) {
       this.logger.error(
         `Could not send email for event 'draw.proposal.answer': ${e}`,
+      );
+    }
+  }
+
+  @OnEvent('game.forfeited', { async: true })
+  private async handledGameForfeitedEvent(game: GameEntity) {
+    try {
+      this.logger.log(
+        `GAME[${game.id}] :: Going to send an email for 'game.forfeited'`,
+      );
+
+      await this.emailClient.sendTemplate(new GameForfeited(game));
+    } catch (e) {
+      this.logger.error(
+        `Could not send email for event 'game.forfeited': ${e}`,
       );
     }
   }

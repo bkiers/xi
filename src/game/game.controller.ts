@@ -104,6 +104,23 @@ export class GameController {
     }
   }
 
+  @Post(':id/forfeit')
+  @ApiOperation({ summary: 'Forfeit a game' })
+  @ApiResponse({
+    status: 200,
+    description: 'The forfeited game',
+    type: GameRead,
+  })
+  async forfeit(@Request() req, @Param('id') id: number): Promise<GameRead> {
+    try {
+      const entity = await this.gameService.forfeit(id, req.user.userId);
+
+      return new GameRead(entity, req.user.userId);
+    } catch (e) {
+      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   @Get()
   @ApiOperation({ summary: 'Find all games' })
   @ApiResponse({

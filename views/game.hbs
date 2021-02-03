@@ -104,7 +104,18 @@
     }
 
     function confirmForfeit() {
-      console.log('forfeit');
+      fetch(`/games/{{game.id}}/forfeit`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        body: JSON.stringify({})
+      }).then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            displayMessage(data.error, 'danger');
+          } else {
+            window.location.replace('/games/{{game.id}}');
+          }
+        });
     }
 
     function confirmMove() {

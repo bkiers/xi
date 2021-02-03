@@ -7,7 +7,12 @@
 <body>
   <h1>New game</h1>
   {{#if message}}
-    {{message}}
+    <p>
+      {{message}}
+    </p>
+    <p>
+      <a href="/games">Show games</a>
+    </p>
   {{else}}
     <form method="POST" action="/games/create">
       Invite

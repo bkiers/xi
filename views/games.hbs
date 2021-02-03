@@ -6,21 +6,26 @@
 </head>
 <body>
   <h1>Xi</h1>
-  <table>
-    <thead>
-      <th>id</th>
-      <th>red</th>
-      <th>black</th>
-    </thead>
-    <tbody>
-      {{#each games}}
-        <tr>
-          <td><a href="/games/{{this.id}}">{{this.id}}</a></td>
-          <td>{{this.redPlayer.name}}</td>
-          <td>{{this.blackPlayer.name}}</td>
-        </tr>
-      {{/each}}
-    </tbody>
-  </table>
+  <p>
+    <a href="/games/create">new game</a>
+  </p>
+  <p>
+    <table>
+      <thead>
+        <th>id</th>
+        <th>red</th>
+        <th>black</th>
+      </thead>
+      <tbody>
+        {{#each games}}
+          <tr>
+            <td><a href="/games/{{this.id}}">{{this.id}}</a></td>
+            <td>{{this.redPlayer.name}}</td>
+            <td>{{this.blackPlayer.name}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </p>
 </body>
 </html>

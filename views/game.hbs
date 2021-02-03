@@ -3,7 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <title>Xi - Game {{game.id}}</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
   <style>
     body {
       padding: 10px;
@@ -25,12 +27,6 @@
     }
     .right {
       float: right;
-    }
-    .red {
-      color: red;
-    }
-    .black {
-      color: black;
     }
     .piece {
       position: absolute;
@@ -104,7 +100,28 @@
       }).then(response => response.json())
         .then(data => {
           if (data.error) {
-            document.getElementById('error').innerText = data.error;
+            let controls = document.getElementById('controls');
+            controls.style.display = 'none';
+
+            let errorDiv = document.getElementById('error');
+
+            let alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+            alertDiv.setAttribute('role', 'alert');
+            let errorSpan = document.createElement('span');
+            errorSpan.innerText = data.error;
+            let closeButton = document.createElement('button');
+            closeButton.setAttribute('type', 'button');
+            closeButton.setAttribute('data-dismiss', 'alert');
+            closeButton.setAttribute('aria-label', 'alert');
+            closeButton.className = 'close';
+            let closeSpan = document.createElement('span');
+            closeSpan.setAttribute('aria-hidden', 'true');
+            closeSpan.innerHTML = '&times;';
+            closeButton.appendChild(closeSpan);
+            alertDiv.appendChild(errorSpan);
+            alertDiv.appendChild(closeButton);
+            errorDiv.appendChild(alertDiv);
 
             let tdFrom = document.getElementById(`${firstClick[0]}_${firstClick[1]}`);
             let tdTo = document.getElementById(`${secondClick[0]}_${secondClick[1]}`);
@@ -252,24 +269,23 @@
         {{/if}}
       {{/if}}
     </h3>
+    <p>
+      {{#if game.gameOver}}
+        {{game.winnerPlayer.name}} won the game
+      {{/if}}
+    </p>
+
+    {{#unless game.gameOver}}
+      {{#if game.turnPlayerIsCheck}}
+        <p>It's check!</p>
+      {{/if}}
+    {{/unless}}
+
+    <div id="controls">
+      <button onclick="confirmMove()">confirm</button>
+    </div>
+
+    <div id="error"></div>
   </div>
-
-  <p>
-    {{#if game.gameOver}}
-      {{game.winnerPlayer.name}} won the game
-    {{/if}}
-  </p>
-
-  {{#unless game.gameOver}}
-    {{#if game.turnPlayerIsCheck}}
-      <p>It's check!</p>
-    {{/if}}
-  {{/unless}}
-
-  <div id="controls">
-    <button onclick="confirmMove()">confirm</button>
-  </div>
-
-  <div id="error"></div>
 </body>
 </html>

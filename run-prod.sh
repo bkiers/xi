@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 export XI_ENV=production
+export XI_LAST_DEPLOY=$(date)
 
 npm run build
 

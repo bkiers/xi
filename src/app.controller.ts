@@ -68,7 +68,7 @@ export class AppController {
   async games(@Request() req) {
     const games = await this.http<GameRead[]>('/api/games', 'get', req);
 
-    return { games: games };
+    return { games: games, lastDeploy: process.env.XI_LAST_DEPLOY };
   }
 
   @Get('/games/:id')

@@ -3,5 +3,10 @@
     "dialect": "sqlite",
     "storage": "./data/xi-dev.db",
     "logging": true
+  },
+  "production": {
+    "dialect": "sqlite",
+    "storage": "./data/xi-prd.db",
+    "logging": true
   }
 }

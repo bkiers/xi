@@ -10,7 +10,6 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "start:prod": "npx sequelize-cli db:migrate && node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:cov": "jest --coverage",
@@ -18,7 +17,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "start:debug:webstorm": "node -r ts-node/register -r tsconfig-paths/register src/main.ts",
     "seed:create": "./node_modules/.bin/sequelize seed:generate --name",
-    "seed:run": "./node_modules/.bin/sequelize db:seed:all"
+    "seed:run": "./node_modules/.bin/sequelize db:seed:all",
+    "migrations:run": "./node_modules/.bin/sequelize db:migrate"
   },
   "dependencies": {
     "@nestjs/common": "^7.5.1",

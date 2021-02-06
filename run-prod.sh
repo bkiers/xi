@@ -3,4 +3,7 @@
 export XI_ENV=production
 
 npm run build
-npm run start:prod
+
+./node_modules/.bin/sequelize db:migrate --env production
+
+node dist/main

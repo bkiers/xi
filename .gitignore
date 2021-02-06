@@ -2,7 +2,6 @@ config/*.env
 
 .idea/
 *.iml
-
 *.db
 
 # compiled output

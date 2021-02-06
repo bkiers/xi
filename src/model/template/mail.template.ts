@@ -38,15 +38,8 @@ export abstract class MailTemplate {
       json[tuple[0]] = tuple[1];
     }
 
-    json.baseUrl = MailTemplate.baseUrlAnPort();
+    json.baseUrl = process.env.XI_BASE_URL;
 
     return template(json);
-  }
-
-  private static baseUrlAnPort(): string {
-    const url = process.env.XI_BASE_URL;
-    const port = process.env.XI_PORT;
-
-    return port === '80' ? url : `${url}:${port}`;
   }
 }

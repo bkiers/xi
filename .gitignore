@@ -9,6 +9,8 @@ config/*.env
 /dist
 /node_modules
 
+deploy.txt
+
 # Logs
 logs
 *.log

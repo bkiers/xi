@@ -22,6 +22,9 @@ import { UserRead } from './user/user.read';
 import { MoveCreate } from './game/move.create';
 import { GameCreate } from './game/game.create';
 import { DrawProposalRequest } from './model/request/draw.proposal.request';
+import { join } from 'path';
+import { projectRoot } from './main';
+import * as fs from 'fs';
 
 @Controller()
 export class AppController {
@@ -66,9 +69,10 @@ export class AppController {
   @ApiExcludeEndpoint()
   @Render('games')
   async games(@Request() req) {
+    const deploy = fs.readFileSync(join(projectRoot(), 'deploy.txt'), 'utf8');
     const games = await this.http<GameRead[]>('/api/games', 'get', req);
 
-    return { games: games };
+    return { games: games, deploy: deploy };
   }
 
   @Get('/games/:id')

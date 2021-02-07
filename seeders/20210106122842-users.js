@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // The passwords are BCrypt hashes with salt 10 rounds
+    // The passwords are BCrypt hashes with 10 rounds salt
     await queryInterface.bulkInsert(
       'UserEntities',
       [
@@ -10,7 +10,7 @@ module.exports = {
           name: 'Alice',
           email: 'a@a.a',
           passwordHash:
-            '$2b$10$KbTMyUWJVoNhQAOPre5BTOR8g.1x/09xjTjuk8lB3FOuOpQTRn66e', // a
+            '$2b$10$KbTMyUWJVoNhQAOPre5BTOR8g.1x/09xjTjuk8lB3FOuOpQTRn66e', // password: a
           isAdmin: true,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -19,7 +19,7 @@ module.exports = {
           name: 'Bob',
           email: 'b@b.b',
           passwordHash:
-            '$2b$10$5zf.fDeqSdNIAE4E4QvBeu15NDOPradVBrHTJ8gc3a1iFbQbyF7p.', // b
+            '$2b$10$5zf.fDeqSdNIAE4E4QvBeu15NDOPradVBrHTJ8gc3a1iFbQbyF7p.', // password: b
           isAdmin: false,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -28,7 +28,7 @@ module.exports = {
           name: 'Chuck',
           email: 'c@c.c',
           passwordHash:
-            '$2b$10$ZwyzNXMBdZwtIs3BQGjzhOfVfp/a9gc/h3IQERHjjJgCa/D1y7sOa', // c
+            '$2b$10$ZwyzNXMBdZwtIs3BQGjzhOfVfp/a9gc/h3IQERHjjJgCa/D1y7sOa', // password: c
           isAdmin: false,
           createdAt: new Date(),
           updatedAt: new Date(),

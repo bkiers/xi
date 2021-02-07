@@ -5,6 +5,8 @@ import {
   HttpException,
   HttpStatus,
   Res,
+  UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
@@ -36,10 +38,7 @@ export class AuthController {
     );
 
     if (user === null) {
-      throw new HttpException(
-        'Invalid email/password combination',
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw new UnauthorizedException('Invalid email/password combination');
     }
 
     const accessToken = this.authService.accessTokenFor(user);
@@ -68,7 +67,7 @@ export class AuthController {
 
       return new UserRead(userEntity);
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException(e.message);
     }
   }
 }

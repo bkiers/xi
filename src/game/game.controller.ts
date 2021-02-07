@@ -1,4 +1,6 @@
 import {
+  BadGatewayException,
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -6,6 +8,7 @@ import {
   HttpCode,
   HttpException,
   HttpStatus,
+  NotFoundException,
   Param,
   Post,
   Request,
@@ -44,10 +47,7 @@ export class GameController {
     const entity = await this.gameService.findById(id);
 
     if (entity === null) {
-      throw new HttpException(
-        `No game found with id ${id}`,
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException(`No game found with id ${id}`);
     }
 
     return new GameRead(entity, req.user.userId);
@@ -62,7 +62,7 @@ export class GameController {
     try {
       await this.gameService.proposeDraw(id, req.user.userId);
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException(e.message);
     }
   }
 
@@ -83,7 +83,7 @@ export class GameController {
         accepted === 'true',
       );
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadGatewayException(e.message);
     }
   }
 
@@ -100,7 +100,7 @@ export class GameController {
 
       return new GameRead(entity, req.user.userId);
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException(e.message);
     }
   }
 
@@ -117,7 +117,7 @@ export class GameController {
 
       return new GameRead(entity, req.user.userId);
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException(e.message);
     }
   }
 
@@ -161,7 +161,7 @@ export class GameController {
     try {
       await this.gameService.delete(req.user.userId, id);
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException(e.message);
     }
   }
 
@@ -189,7 +189,7 @@ export class GameController {
 
       return new GameRead(entity, req.user.userId);
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+      throw new BadRequestException(e.message);
     }
   }
 }

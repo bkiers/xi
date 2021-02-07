@@ -10,6 +10,8 @@ import {
   UseGuards,
   Request,
   Query,
+  NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UserCreate } from './user.create';
 import {
@@ -42,10 +44,7 @@ export class UserController {
     const entity = await this.userService.findById(id);
 
     if (entity === null) {
-      throw new HttpException(
-        `No user found with ID ${id}`,
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException(`No user found with ID ${id}`);
     }
 
     return new UserRead(entity);
@@ -80,7 +79,7 @@ export class UserController {
     @Body() userCreate: UserCreate,
   ): Promise<UserRead> {
     if (!(await this.userService.loggedInUserIsAdmin(req))) {
-      throw new HttpException('Sorry, no can do :(', HttpStatus.UNAUTHORIZED);
+      throw new UnauthorizedException('Sorry, no can do :(');
     }
 
     const entity = await this.userService.create(userCreate);

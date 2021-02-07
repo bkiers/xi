@@ -3,12 +3,14 @@ import {
   Controller,
   Get,
   HttpService,
+  NotFoundException,
   Param,
   Post,
   Query,
   Render,
   Request,
   Res,
+  UseFilters,
 } from '@nestjs/common';
 import { Method } from 'axios';
 import { ApiExcludeEndpoint } from '@nestjs/swagger';
@@ -25,7 +27,9 @@ import { DrawProposalRequest } from './model/request/draw.proposal.request';
 import { join } from 'path';
 import { projectRoot } from './main';
 import * as fs from 'fs';
+import { NotFoundExceptionFilter } from './filter/not.found.exception.filter';
 
+@UseFilters(new NotFoundExceptionFilter())
 @Controller()
 export class AppController {
   constructor(private readonly httpService: HttpService) {}
@@ -286,16 +290,24 @@ export class AppController {
     req: any = null,
     data: any = null,
   ): Promise<T> {
-    const axiosResponse = await this.httpService
-      .request({
-        baseURL: `${process.env.XI_API_URL}`,
-        url: url,
-        method: method as Method,
-        headers: { Authorization: `Bearer ${req?.cookies['accessToken']}` },
-        data: data,
-      })
-      .toPromise();
+    try {
+      const axiosResponse = await this.httpService
+        .request({
+          baseURL: `${process.env.XI_API_URL}`,
+          url: url,
+          method: method as Method,
+          headers: { Authorization: `Bearer ${req?.cookies['accessToken']}` },
+          data: data,
+        })
+        .toPromise();
 
-    return axiosResponse.data as T;
+      return axiosResponse.data as T;
+    } catch (e) {
+      if (e.response.status === 404) {
+        throw new NotFoundException(e.response.message);
+      }
+
+      throw e;
+    }
   }
 }

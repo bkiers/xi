@@ -1,4 +1,4 @@
-# Xi - Correspondance Chinese Chess 
+# Xi - Correspondence Chinese Chess 
 
 [![CircleCI](https://circleci.com/gh/bkiers/xi.svg?style=svg)](https://circleci.com/gh/bkiers/xi)
 

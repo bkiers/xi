@@ -2,8 +2,10 @@
 
 [![CircleCI](https://circleci.com/gh/bkiers/xi.svg?style=svg)](https://circleci.com/gh/bkiers/xi)
 
-A small [NestJS](https://nestjs.com/) app to play correspondence [Chinese 
+A small [NestJS](https://nestjs.com/) app to play correspondence [Chinese
 Chess](https://en.wikipedia.org/wiki/Xiangqi).
+
+![Xi screen](public/images/xi.png)
 
 ## Getting started
 

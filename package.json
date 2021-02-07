@@ -33,6 +33,7 @@
     "@nestjs/swagger": "^4.7.9",
     "@sendgrid/mail": "^7.4.1",
     "@types/bcrypt": "^3.0.0",
+    "@types/validator": "^13.1.2",
     "bcrypt": "^5.0.0",
     "cookie-parser": "^1.4.5",
     "hbs": "^4.1.1",

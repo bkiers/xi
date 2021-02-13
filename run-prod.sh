@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-export XI_ENV=production
-
-date > deploy.txt
+export NODE_ENV=production
 
 npm run build
 

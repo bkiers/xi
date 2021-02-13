@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Run the Xi app in production mode.
+#
 # This script can be started in its own screen at startup.
 #
 # In `/etc/rc.local`, for example:

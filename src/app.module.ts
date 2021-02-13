@@ -21,12 +21,26 @@ import { EmailModule } from './email/email.module';
 import { ResetPasswordEntity } from './auth/reset.password.entity';
 import { NotificationEntity } from './entity/notification.entity';
 import { DrawProposalEntity } from './game/draw.proposal.entity';
+import { Dialect } from 'sequelize/types';
+import { SequelizeModuleOptions } from '@nestjs/sequelize/dist/interfaces/sequelize-options.interface';
+
+const options =
+  process.env.XI_DB_DIALECT === 'sqlite'
+    ? {
+        storage: process.env.XI_DB_STORAGE,
+      }
+    : {
+        host: process.env.XI_DB_HOST,
+        port: process.env.XI_DB_PORT,
+        username: process.env.XI_DB_USER,
+        password: process.env.XI_DB_PASSWORD,
+        database: process.env.XI_DB_DB,
+      };
 
 @Module({
   imports: [
     SequelizeModule.forRoot({
-      dialect: 'sqlite',
-      storage: process.env.XI_DB_STORAGE,
+      dialect: process.env.XI_DB_DIALECT as Dialect,
       logging: process.env.XI_DB_LOGGING === 'true' ? console.log : null,
       autoLoadModels: true,
       models: [
@@ -37,7 +51,8 @@ import { DrawProposalEntity } from './game/draw.proposal.entity';
         NotificationEntity,
         DrawProposalEntity,
       ],
-    }),
+      ...options,
+    } as SequelizeModuleOptions),
     EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
     EmailModule,

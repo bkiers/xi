@@ -37,6 +37,14 @@ Run migrations:
 npx sequelize-cli db:migrate
 ```
 
+## Database
+
+```sql
+CREATE DATABASE xi;
+CREATE USER xi_usr WITH PASSWORD 't0p-s3cr3t';
+GRANT ALL PRIVILEGES ON DATABASE xi TO xi_usr;
+```
+
 ## License
 
 [MIT licensed](LICENSE).

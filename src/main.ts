@@ -3,7 +3,7 @@ import { join, normalize } from 'path';
 
 // Before we load any of the NestJS classes, be sure to load the configuration
 // on which some of the NestJS classes rely.
-const environment = process.env.XI_ENV || 'development';
+const environment = process.env.NODE_ENV || 'development';
 const pathToRoot = __dirname.endsWith('dist/src') ? '../..' : '..';
 
 dotenv.config({

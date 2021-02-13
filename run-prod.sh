@@ -5,8 +5,8 @@
 # This script can be started in its own screen at startup.
 #
 # In `/etc/rc.local`, for example:
-#   su - bart -c "screen -dmS xi"
-#   su - bart -c "screen -S xi -X stuff 'cd /home/bart/development/xi && ./run-prod.sh\n'"
+#   su - SOME_USER -c "screen -dmS xi"
+#   su - SOME_USER -c "screen -S xi -X stuff 'cd /path/to/xi && ./run-prod.sh\n'"
 
 export NODE_ENV=production
 

@@ -12,11 +12,17 @@ export class GameService {
   constructor(private readonly eventEmitter: EventEmitter2) {}
 
   async findById(id: number): Promise<GameEntity | null> {
-    return GameEntity.findByPk(id, { include: [{ all: true }] });
+    return GameEntity.findByPk(id, {
+      include: [{ all: true }],
+      order: [[{ model: MoveEntity, as: 'moves' }, 'id', 'ASC']],
+    });
   }
 
   async findAll(): Promise<GameEntity[]> {
-    return GameEntity.findAll({ include: [{ all: true }] });
+    return GameEntity.findAll({
+      include: [{ all: true }],
+      order: [[{ model: MoveEntity, as: 'moves' }, 'id', 'ASC']],
+    });
   }
 
   async forfeit(gameId: number, loggedInUserId: number): Promise<GameEntity> {

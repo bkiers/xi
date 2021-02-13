@@ -5,8 +5,12 @@
     "logging": true
   },
   "production": {
-    "dialect": "sqlite",
-    "storage": "./data/xi-prd.db",
+    "dialect": "postgres",
+    "host": "localhost",
+    "port": 5432,
+    "username": "xi_usr",
+    "password": "t0p-s3cr3t",
+    "database": "xi",
     "logging": true
   }
 }

@@ -4,13 +4,13 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     const aliceId = (
       await queryInterface.sequelize.query(
-        'SELECT id FROM UserEntities WHERE name = "Alice" LIMIT 1',
+        'SELECT id FROM "UserEntities" WHERE name = \'Alice\' LIMIT 1;',
       )
     )[0][0].id;
 
     const bobId = (
       await queryInterface.sequelize.query(
-        'SELECT id FROM UserEntities WHERE name = "Bob" LIMIT 1',
+        'SELECT id FROM "UserEntities" WHERE name = \'Bob\' LIMIT 1;',
       )
     )[0][0].id;
 
@@ -18,7 +18,7 @@ module.exports = {
     const clockRunsOutAt = new Date();
     clockRunsOutAt.setTime(clockRunsOutAt.getTime() + secondsPerMove * 1000);
 
-    const gameId = await queryInterface.bulkInsert(
+    await queryInterface.bulkInsert(
       'GameEntities',
       [
         {
@@ -36,6 +36,12 @@ module.exports = {
       ],
       {},
     );
+
+    const gameId = (
+      await queryInterface.sequelize.query(
+        'SELECT id FROM "GameEntities" LIMIT 1;',
+      )
+    )[0][0].id;
 
     //       0 1 2 3 4 5 6 7 8
     //     +-------------------+
